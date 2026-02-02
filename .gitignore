@@ -1,0 +1,13 @@
+build/
+build_win/
+build_linux/
+*.svg
+ideas.md
+test_lexer
+test_parser
+*.exe
+*.txt
+.vscode/
+.DS_Store
+ToDO.md
+*.bat
