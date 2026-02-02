@@ -6,7 +6,7 @@ ideas.md
 test_lexer
 test_parser
 *.exe
-*.txt
+styling.txt
 .vscode/
 .DS_Store
 ToDO.md

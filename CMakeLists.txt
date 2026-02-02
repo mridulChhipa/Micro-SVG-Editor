@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 4.1)
+project(MicroSvgEditor LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+option(MICRO_SVG_EDITOR_ENABLE_WARNINGS "Enable strict compiler warnings" ON)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+set(QT_REQUIRED_COMPONENTS Widgets)
+find_package(Qt6 COMPONENTS ${QT_REQUIRED_COMPONENTS})
+if(Qt6_FOUND)
+  set(QT_VERSION_MAJOR 6)
+else()
+  find_package(Qt5 COMPONENTS ${QT_REQUIRED_COMPONENTS} REQUIRED)
+  set(QT_VERSION_MAJOR 5)
+endif()
+set(QT_VERSION_MAJOR ${QT_VERSION_MAJOR} CACHE INTERNAL "Detected Qt major version" FORCE)
+
+add_subdirectory(src)
