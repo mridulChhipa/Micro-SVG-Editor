@@ -145,7 +145,7 @@ public:
             }
         }
 
-        std::cout << svg.toSVG();
+        // std::cout << svg.toSVG();
     }
 
     SVG getSVG() const { return svg; }

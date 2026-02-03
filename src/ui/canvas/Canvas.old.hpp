@@ -10,9 +10,9 @@
 #include <QImage>
 #include <QResizeEvent>
 
-#include "../model/SVG.hpp"
-#include "../model/Rect.hpp"
-#include "../model/Circle.hpp"
+#include "../../model/SVG.hpp"
+#include "../../model/Rect.hpp"
+#include "../../model/Circle.hpp"
 
 class Canvas : public QWidget
 {
@@ -23,7 +23,7 @@ public:
     {
         setAttribute(Qt::WA_StaticContents);
         image = QImage(size(), QImage::Format_ARGB32_Premultiplied);
-        image.fill(Qt::white);
+        image.fill(Qt::gray);
     }
 
     void updateCanvas(const SVG &newSvg)
@@ -39,17 +39,17 @@ public:
     }
 
 protected:
-    void resizeEvent(QResizeEvent *event) override
-    {
-        if (width() > image.width() || height() > image.height())
-        {
-            int newW = std::max(width(), image.width());
-            int newH = std::max(height(), image.height());
-            resizeImage(&image, QSize(newW, newH));
-            update();
-        }
-        QWidget::resizeEvent(event);
-    }
+    // void resizeEvent(QResizeEvent *event) override
+    // {
+    //     if (width() > image.width() || height() > image.height())
+    //     {
+    //         int newW = std::max(width(), image.width());
+    //         int newH = std::max(height(), image.height());
+    //         resizeImage(&image, QSize(newW, newH));
+    //         update();
+    //     }
+    //     QWidget::resizeEvent(event);
+    // }
 
     void mousePressEvent(QMouseEvent *event) override
     {
@@ -88,7 +88,7 @@ protected:
 private:
     bool drawing;
     QPoint lastPoint;
-    QImage image;
+    // QImage image;
     SVG svg;
 
     void drawLineTo(const QPoint &endPoint)
@@ -102,16 +102,16 @@ private:
         lastPoint = endPoint;
     }
 
-    void resizeImage(QImage *image, const QSize &newSize)
-    {
-        if (image->size() == newSize)
-            return;
-        QImage newImage(newSize, QImage::Format_RGB32);
-        newImage.fill(Qt::white);
-        QPainter painter(&newImage);
-        painter.drawImage(QPoint(0, 0), *image);
-        *image = newImage;
-    }
+    // void resizeImage(QImage *image, const QSize &newSize)
+    // {
+    //     if (image->size() == newSize)
+    //         return;
+    //     QImage newImage(newSize, QImage::Format_RGB32);
+    //     newImage.fill(Qt::white);
+    //     QPainter painter(&newImage);
+    //     painter.drawImage(QPoint(0, 0), *image);
+    //     *image = newImage;
+    // }
 
     void drawSVG(QPainter &painter)
     {
@@ -123,14 +123,34 @@ private:
             if (!obj)
                 continue;
 
-            if (obj->type() == "rectangle")
+            if (obj->type() == "rect")
             {
                 auto rect = std::dynamic_pointer_cast<Rect>(obj);
-                painter.drawRect(QRectF(rect->x, rect->y, rect->width, rect->height));
+
+                QPen pen;
+                pen.setColor(QColor(QString::fromStdString(rect->stroke)));
+                pen.setWidth(2);
+                pen.setStyle(Qt::SolidLine);
+                pen.setJoinStyle(Qt::RoundJoin); // Makes the outer corners look smoother
+
+                painter.setPen(pen);
+                painter.setBrush(QBrush(QColor(QString::fromStdString(rect->fill))));
+
+                painter.drawRoundedRect(QRectF(rect->x, rect->y, rect->width, rect->height), rect->rx, rect->ry);
             }
             else if (obj->type() == "circle")
             {
                 auto circle = std::dynamic_pointer_cast<Circle>(obj);
+
+                QPen pen;
+                pen.setColor(QColor(QString::fromStdString(circle->stroke)));
+                pen.setWidth(2);
+                pen.setStyle(Qt::SolidLine);
+                pen.setJoinStyle(Qt::RoundJoin); // Makes the outer corners look smoother
+
+                painter.setPen(pen);
+                painter.setBrush(QBrush(QColor(QString::fromStdString(circle->fill))));
+
                 painter.drawEllipse(QPointF(circle->x, circle->y), circle->r, circle->r);
             }
         }

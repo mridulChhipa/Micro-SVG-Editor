@@ -15,7 +15,7 @@
 #include <QFileInfo> // Added for path debugging
 #include <QFileDialog>
 
-#include "Canvas.hpp"
+#include "./canvas/Canvas.hpp"
 #include "MenuBar.hpp"
 #include "TopToolBar.hpp"
 #include "LeftToolBar.hpp"
@@ -33,18 +33,34 @@ private:
 private slots:
     void openFile()
     {
-        // Implementation for opening a file
         QString filePath = QFileDialog::getOpenFileName(this, "Open SVG File", QDir::homePath(), "SVG Files (*.svg)");
         if (!filePath.isEmpty())
         {
             qDebug() << "File opened:" << filePath;
-            Reader svgReader = Reader(filePath.toStdString());
+            Reader svgReader = Reader(filePath);
             Lexer svgLexer = Lexer(svgReader);
             Parser svgParser = Parser(svgLexer);
             svgParser.parse();
             drawingCanvas->updateCanvas(svgParser.getSVG());
         }
     }
+
+    void openSampleFile(const QString &samplePath = "")
+    {
+        QString filePath = samplePath;
+        if (filePath.isEmpty())
+        {
+            filePath = ":testxmls/sample.svg";
+        }
+
+        qDebug() << "Opening sample file:" << filePath;
+        Reader svgReader = Reader(filePath);
+        Lexer svgLexer = Lexer(svgReader);
+        Parser svgParser = Parser(svgLexer);
+        svgParser.parse();
+        drawingCanvas->updateCanvas(svgParser.getSVG());
+    }
+
     void loadStyleSheet()
     {
         QFile file(":ui/style.qss");
@@ -79,6 +95,7 @@ public:
 
         drawingCanvas = new Canvas(this);
         setCentralWidget(drawingCanvas);
+        openSampleFile();
 
         // Menu Bar
         MenuBar *menuBar = new MenuBar(this);

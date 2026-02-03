@@ -7,24 +7,28 @@
 #include <stdexcept>
 #include <string>
 
+#include <QString>
+#include <QFile>
+
 class Reader
 {
-    std::string readFile(const std::string &path)
+    std::string readFile(const QString &path)
     {
-        std::ifstream content(path, std::ios::binary);
-        if (!content)
-            throw std::runtime_error("Reader: cannot open " + path);
-        return {std::istreambuf_iterator<char>(content), {}};
+        QFile content(path);
+        if (!content.open(QIODevice::ReadOnly))
+            throw std::runtime_error("Reader: cannot open " + path.toStdString());
+
+        return content.readAll().toStdString();
     }
 
 public:
     Reader() = default;
-    Reader(const std::string &path) { open(path); }
+    Reader(const QString &path) { open(path); }
 
-    void open(const std::string &path)
+    void open(const QString &path)
     {
         data = readFile(path);
-        src = path;
+        src = path.toStdString();
         curr = 0;
         i = 1;
         j = 1;
