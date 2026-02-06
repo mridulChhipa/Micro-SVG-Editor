@@ -3,6 +3,13 @@
 
 inline void Canvas::mousePressEvent(QMouseEvent *event)
 {
+    if (currentTool != "")
+    {
+        std::cout << "Adding shape: " << currentTool.toStdString() << std::endl;
+        addShapeToCanvas(currentTool.toStdString());
+        update();
+    }
+
     if (selected_shape)
     {
         QPainterPath selPath;

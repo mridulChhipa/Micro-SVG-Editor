@@ -62,36 +62,14 @@ QToolBar {
     background-color: white;
 }
 
-QToolBar#TopToolBar {
-    background-color: #b3bbff; 
-    border-bottom: 1px solid #62158c;
-    min-height: 40px;
-}
-
-QToolBar#TopToolBar QToolButton {
-    color: black;
-    font-weight: bold;
-    background-color: transparent;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 2px;
-}
-
-QToolBar#TopToolBar QToolButton:hover {
-    background-color: #8097ff;
-}
-
-QToolBar#TopToolBar QToolButton:checked {
-    background-color: #5c1384; 
-}
-
-QToolBar#LeftToolBar {
+QToolBar {
     background-color: #f3f3f3;
     border-right: 1px solid #e0e0e0;
     width: 50px;
 }
 
-QToolBar#LeftToolBar QToolButton {
+
+QToolBar QToolButton {
     background-color: transparent;
     border: none;
     padding: 8px;
@@ -99,13 +77,18 @@ QToolBar#LeftToolBar QToolButton {
     border-radius: 4px;
 }
 
-QToolBar#LeftToolBar QToolButton:hover {
+QToolBar QToolButton:hover {
     background-color: #eaeaea;
 }
 
 QToolBar#LeftToolBar QToolButton:checked {
     background-color: white;
     border-left: 4px solid #7719aa; /* The OneNote selection stripe */
+    font-weight: bold;
+}
+QToolBar#TopToolBar QToolButton:checked {
+    background-color: white;
+    border-bottom: 4px solid #7719aa; /* The OneNote selection stripe */
     font-weight: bold;
 }
 

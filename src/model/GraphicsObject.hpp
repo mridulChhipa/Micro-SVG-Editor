@@ -14,17 +14,17 @@ public:
     std::string id;
     std::string class_name;
     std::string style;
-    std::string fill;
-    float fill_opacity;
-    std::string stroke;
-    float stroke_width;
-    float stroke_opacity;
-    std::string stroke_linecap;
-    std::string stroke_linejoin;
-    std::string stroke_dasharray;
+    std::string fill{"red"};
+    float fill_opacity{1.0f};
+    std::string stroke{"black"};
+    float stroke_width{1.0f};
+    float stroke_opacity{1.0f};
+    std::string stroke_linecap{"butt"};
+    std::string stroke_linejoin{"miter"};
+    std::string stroke_dasharray{"none"};
     std::string transform;
-    float opacity;
-    std::string visibility;
+    float opacity{1.0f};
+    std::string visibility{"visible"};
 
     ~GraphicsObject() = default;
     virtual std::string toSVG() const = 0;
@@ -35,7 +35,7 @@ public:
         id = (attributes.count("id") ? attributes.at("id") : "");
         class_name = (attributes.count("class") ? attributes.at("class") : "");
         style = (attributes.count("style") ? attributes.at("style") : "");
-        fill = (attributes.count("fill") ? attributes.at("fill") : "none");
+        fill = (attributes.count("fill") ? attributes.at("fill") : "red");
         fill_opacity = (attributes.count("fill-opacity") ? std::stof(attributes.at("fill-opacity")) : 1.0f);
         stroke = (attributes.count("stroke") ? attributes.at("stroke") : "black");
         stroke_width = (attributes.count("stroke-width") ? std::stof(attributes.at("stroke-width")) : 1.0f);

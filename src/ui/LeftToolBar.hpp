@@ -35,9 +35,13 @@ private:
         QActionGroup *actionGroup = new QActionGroup(this);
         actionGroup->setExclusive(true);
 
-        addToolAction("Polygon", true, actionGroup, ":ui/icons/polygon.jpg", "Draw Polygon");
-        addToolAction("Polyline", true, actionGroup);
-        addToolAction("Text", true, actionGroup);
+        QAction *hexagonAction = addToolAction("Hexagon", true, actionGroup, ":ui/icons/polygon.jpg", "Hexagon");
+        QAction *freehandAction = addToolAction("Freehand", true, actionGroup);
+        QAction *textAction = addToolAction("Text", true, actionGroup);
+
+        connect(hexagonAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
+        connect(freehandAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
+        connect(textAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
     }
 
 public:
@@ -46,5 +50,19 @@ public:
         // Toolbar setup can be done here
         setupToolbar();
     }
+
+private slots:
+    void toolSelectionTriggered()
+    {
+        QAction *action = qobject_cast<QAction *>(sender());
+        if (action)
+        {
+            QString toolName = action->text();
+            emit toolSelected(toolName);
+        }
+    }
+
+signals:
+    void toolSelected(const QString &toolName);
 };
 #endif

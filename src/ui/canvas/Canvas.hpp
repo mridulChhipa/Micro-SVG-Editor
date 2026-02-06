@@ -16,6 +16,7 @@
 #include <QImage>
 #include <QResizeEvent>
 #include <QRegularExpression>
+#include <QInputDialog>
 
 #include "../../model/SVG.hpp"
 #include "../../model/Rect.hpp"
@@ -26,13 +27,7 @@
 #include "../../model/Text.hpp"
 #include "HandleType.hpp"
 
-using ShapeVariant = std::variant<
-    std::shared_ptr<Rect>,
-    std::shared_ptr<Circle>,
-    std::shared_ptr<Line>,
-    std::shared_ptr<Polyline>,
-    std::shared_ptr<Hexagon>,
-    std::shared_ptr<Text>>;
+using ShapeVariant = std::variant<std::shared_ptr<Rect>, std::shared_ptr<Circle>, std::shared_ptr<Line>, std::shared_ptr<Polyline>, std::shared_ptr<Hexagon>, std::shared_ptr<Text>>;
 
 class Canvas : public QWidget
 {
@@ -47,6 +42,18 @@ public:
         update();
     }
 
+    std::string currentCanvasToSVG()
+    {
+        return svg.toSVG();
+    }
+
+    void clearCanvas()
+    {
+        svg.clear();
+        update();
+    }
+
+    void setCurrentTool(const QString &toolName);
 protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
@@ -66,6 +73,8 @@ private:
     GraphicsObjectPtr selected_shape{nullptr};
     HandleType curr_handle{HandleType::None};
     QRectF start_rect;
+
+    QString currentTool;
 
     const int handle_size = 8;
     const int adjust = 20;
@@ -109,15 +118,19 @@ private:
     void buildShapePath(QPainterPath &path, const std::shared_ptr<Hexagon> &s);
     void buildShapePath(QPainterPath &path, const std::shared_ptr<Text> &s);
 
+    void addShapeToCanvas(const std::string);
+
     QRectF renderHandle(const QRectF &obj, HandleType handle_type);
     HandleType hitTestHandles(const QRectF &obj, const QPointF &point);
 };
 
 #include "./include/MouseEvents.hpp"
+#include "./include/AddShapes.hpp"
 #include "./include/ObjectCreation.hpp"
 #include "./include/Renderer.hpp"
 #include "./include/DragAndResize.hpp"
 #include "./include/BuildPaths.hpp"
 #include "./include/RenderHandles.hpp"
+#include "./include/Tools.hpp"
 
 #endif

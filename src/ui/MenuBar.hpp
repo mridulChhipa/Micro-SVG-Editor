@@ -24,17 +24,20 @@ public:
         this->setNativeMenuBar(false);
 
         QMenu *fileMenu = this->addMenu("File");
-        fileMenu->addAction("New");
+        QAction *newAction = fileMenu->addAction("New");
         QAction *openAction = fileMenu->addAction("Open");
+        fileMenu->addSeparator();
+        QAction *saveAction = fileMenu->addAction("Save");
+        QAction *saveAsAction = fileMenu->addAction("Save As");
+        fileMenu->addSeparator();
+        QAction *clearAction = fileMenu->addAction("Clear Canvas");
+        fileMenu->addAction("Exit", this, &QWidget::close);
 
         connect(openAction, &QAction::triggered, this, &MenuBar::openRequested);
-
-        fileMenu->addSeparator();
-        fileMenu->addAction("Save");
-        fileMenu->addAction("Save As");
-        fileMenu->addSeparator();
-        fileMenu->addAction("Clear");
-        fileMenu->addAction("Exit", this, &QWidget::close);
+        connect(saveAction, &QAction::triggered, this, &MenuBar::saveRequested);
+        connect(saveAsAction, &QAction::triggered, this, &MenuBar::saveAsRequested);
+        connect(clearAction, &QAction::triggered, this, &MenuBar::clearRequested);
+        connect(newAction, &QAction::triggered, this, &MenuBar::newRequested);
 
         // Edit Menu
         QMenu *editMenu = this->addMenu("Edit");
@@ -54,10 +57,13 @@ public:
         viewMenu->addAction("Fullscreen");
         viewMenu->addSeparator();
         viewMenu->addAction("Toggle Code / Design View");
-
     }
 
 signals:
     void openRequested();
+    void saveRequested();
+    void saveAsRequested();
+    void clearRequested();
+    void newRequested();
 };
 #endif
