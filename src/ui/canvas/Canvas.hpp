@@ -1,6 +1,7 @@
 #ifndef CANVAS_HPP
 #define CANVAS_HPP
 
+#include <iostream>
 #include <vector>
 #include <memory>
 #include <ranges> // to reverse iterate through objects for selection
@@ -20,8 +21,8 @@
 #include "../../model/Polyline.hpp"
 #include "../../model/Polygon.hpp"
 #include "../../model/Text.hpp"
+#include "HandleType.hpp"
 
-// Use QuadTrees for optimization if needed in future
 class Canvas : public QWidget
 {
     Q_OBJECT
@@ -44,119 +45,473 @@ protected:
             QPainterPath path;
             QPen pen;
             createObject(obj, path, pen);
-            if (obj->type() == "text" || obj->type() == "line" || obj->type() == "polyline")
+            if (obj->type() == "line" || obj->type() == "polyline")
             {
-                if (path.boundingRect().contains(event->pos()))
+                if (path.boundingRect().adjusted(-adjust, -adjust, adjust, adjust).contains(event->pos()))
                 {
                     dragging = true;
-                    curr_drag = obj;
+                    selected_shape = obj;
                     last_point = event->pos();
                     break;
                 }
             }
-            else if (path.contains(event->pos()))
+            else if (path.boundingRect().contains(event->pos()))
             {
                 dragging = true;
-                curr_drag = obj;
+                selected_shape = obj;
                 last_point = event->pos();
                 break;
+            }
+        }
+
+        if (selected_shape)
+        {
+            std::cout << "Selected shape type: " << selected_shape->type() << std::endl;
+            QRectF boundingRect;
+            QPainterPath path;
+            if (selected_shape->type() == "rect")
+            {
+                std::shared_ptr<Rect> rect = std::dynamic_pointer_cast<Rect>(selected_shape);
+                path.addRoundedRect(QRectF(rect->x, rect->y, rect->width, rect->height), rect->rx, rect->ry);
+            }
+            else if (selected_shape->type() == "circle")
+            {
+                std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(selected_shape);
+                path.addEllipse(QPointF(circle->x, circle->y), circle->r, circle->r);
+            }
+            else if (selected_shape->type() == "line")
+            {
+                std::shared_ptr<Line> line = std::dynamic_pointer_cast<Line>(selected_shape);
+                path.moveTo(line->x1, line->y1);
+                path.lineTo(line->x2, line->y2);
+            }
+            else if (selected_shape->type() == "polyline")
+            {
+                std::shared_ptr<Polyline> polyline = std::dynamic_pointer_cast<Polyline>(selected_shape);
+                for (const auto &[x, y] : polyline->points)
+                {
+                    if (path.isEmpty())
+                        path.moveTo(x, y);
+                    else
+                        path.lineTo(x, y);
+                }
+            }
+            else if (selected_shape->type() == "polygon")
+            {
+                std::shared_ptr<Polygon> polygon = std::dynamic_pointer_cast<Polygon>(selected_shape);
+                for (const auto &[x, y] : polygon->points)
+                {
+                    if (path.isEmpty())
+                        path.moveTo(x, y);
+                    else
+                        path.lineTo(x, y);
+                }
+                path.closeSubpath();
+            }
+            else if (selected_shape->type() == "text")
+            {
+                std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(selected_shape);
+                path.addText(QPointF(text->x, text->y), QFont(QString::fromStdString(text->font_family), text->font_size), QString::fromStdString(text->content));
+            }
+
+            boundingRect = path.boundingRect().adjusted(-adjust, -adjust, adjust, adjust);
+
+            HandleType handle = hitTestHandles(boundingRect, event->pos());
+            std::cout << "Hit test handle: " << static_cast<int>(handle) << std::endl;
+
+            if (handle != HandleType::None)
+            {
+                std::cout << "Resizing from handle: " << static_cast<int>(handle) << std::endl;
+                is_resizing = true;
+                curr_handle = handle;
+                start_rect = boundingRect;
+                last_point = event->pos();
+                dragging = false;
             }
         }
     }
 
     void mouseMoveEvent(QMouseEvent *event) override
     {
-        if ((event->buttons() & Qt::LeftButton) && dragging)
+        if (event->buttons() & Qt::LeftButton)
         {
             QPoint delta = event->pos() - last_point;
             last_point = event->pos();
 
-            if (curr_drag)
+            if (selected_shape && !is_resizing)
             {
-                if (curr_drag->type() == "rect")
+                if (selected_shape->type() == "rect")
                 {
-                    std::shared_ptr<Rect> rect = std::dynamic_pointer_cast<Rect>(curr_drag);
+                    std::shared_ptr<Rect> rect = std::dynamic_pointer_cast<Rect>(selected_shape);
                     rect->x += delta.x();
                     rect->y += delta.y();
                 }
-                else if (curr_drag->type() == "circle")
+                else if (selected_shape->type() == "circle")
                 {
-                    std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(curr_drag);
+                    std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(selected_shape);
                     circle->x += delta.x();
                     circle->y += delta.y();
                 }
-                else if (curr_drag->type() == "line")
+                else if (selected_shape->type() == "line")
                 {
-                    std::shared_ptr<Line> line = std::dynamic_pointer_cast<Line>(curr_drag);
+                    std::shared_ptr<Line> line = std::dynamic_pointer_cast<Line>(selected_shape);
                     line->x1 += delta.x();
                     line->y1 += delta.y();
                     line->x2 += delta.x();
                     line->y2 += delta.y();
                 }
-                else if (curr_drag->type() == "polyline")
+                else if (selected_shape->type() == "polyline")
                 {
-                    std::shared_ptr<Polyline> polyline = std::dynamic_pointer_cast<Polyline>(curr_drag);
+                    std::shared_ptr<Polyline> polyline = std::dynamic_pointer_cast<Polyline>(selected_shape);
                     for (auto &[x, y] : polyline->points)
                     {
                         x += delta.x();
                         y += delta.y();
                     }
                 }
-                else if (curr_drag->type() == "polygon")
+                else if (selected_shape->type() == "polygon")
                 {
-                    std::shared_ptr<Polygon> polygon = std::dynamic_pointer_cast<Polygon>(curr_drag);
+                    std::shared_ptr<Polygon> polygon = std::dynamic_pointer_cast<Polygon>(selected_shape);
                     for (auto &[x, y] : polygon->points)
                     {
                         x += delta.x();
                         y += delta.y();
                     }
                 }
-                else if (curr_drag->type() == "text")
+                else if (selected_shape->type() == "text")
                 {
-                    std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(curr_drag);
+                    std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(selected_shape);
                     text->x += delta.x();
                     text->y += delta.y();
                 }
                 update();
             }
-        }
-        else if (!dragging)
-        {
-            // Handle hover state if needed
-            for (const GraphicsObjectPtr &obj : svg.objects | std::views::reverse)
-            {
-                QPainterPath path;
-                QPen pen;
-                createObject(obj, path, pen);
-                if (obj->type() == "text" || obj->type() == "line" || obj->type() == "polyline")
-                {
-                    if (path.boundingRect().contains(event->pos()))
-                    {
-                        curr_hover = obj;
-                        // You can add hover effect logic here
 
-                        break;
+            if (is_resizing && selected_shape)
+            {
+                if (curr_handle == HandleType::TopLeft)
+                {
+                    if (selected_shape->type() == "rect")
+                    {
+                        std::shared_ptr<Rect> rect = std::dynamic_pointer_cast<Rect>(selected_shape);
+                        rect->x += delta.x();
+                        rect->y += delta.y();
+                        rect->width -= delta.x();
+                        rect->height -= delta.y();
+                    }
+                    else if (selected_shape->type() == "circle")
+                    {
+                        std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(selected_shape);
+                        circle->x += delta.x() / 2.0;
+                        circle->y += delta.y() / 2.0;
+                        circle->r -= std::max(delta.x(), delta.y());
+                    }
+                    else if (selected_shape->type() == "line")
+                    {
+                        std::shared_ptr<Line> line = std::dynamic_pointer_cast<Line>(selected_shape);
+                        line->x1 += delta.x();
+                        line->y1 += delta.y();
+                    }
+                    else if (selected_shape->type() == "polyline")
+                    {
+                        // Resizing polyline from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "polygon")
+                    {
+                        // Resizing polygon from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "text")
+                    {
+                        std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(selected_shape);
+                        text->x += delta.x();
+                        text->y += delta.y();
+                        text->font_size -= std::max(delta.x(), delta.y()) / 10;
                     }
                 }
-                else if (path.contains(event->pos()))
+                else if (curr_handle == HandleType::TopRight)
                 {
-                    curr_hover = obj;
-                    // You can add hover effect logic here
-                    break;
+                    if (selected_shape->type() == "rect")
+                    {
+                        std::shared_ptr<Rect> rect = std::dynamic_pointer_cast<Rect>(selected_shape);
+                        rect->x += delta.x();
+                        rect->y += delta.y();
+                        rect->width -= delta.x();
+                        rect->height -= delta.y();
+                    }
+                    else if (selected_shape->type() == "circle")
+                    {
+                        std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(selected_shape);
+                        circle->x += delta.x();
+                        circle->y += delta.y();
+                        circle->r -= std::max(delta.x(), delta.y()) / 2;
+                    }
+                    else if (selected_shape->type() == "line")
+                    {
+                        std::shared_ptr<Line> line = std::dynamic_pointer_cast<Line>(selected_shape);
+                        line->x1 += delta.x();
+                        line->y1 += delta.y();
+                    }
+                    else if (selected_shape->type() == "polyline")
+                    {
+                        // Resizing polyline from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "polygon")
+                    {
+                        // Resizing polygon from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "text")
+                    {
+                        std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(selected_shape);
+                        text->x += delta.x();
+                        text->y += delta.y();
+                        text->font_size -= std::max(delta.x(), delta.y()) / 10;
+                    }
                 }
+                else if (curr_handle == HandleType::BottomLeft)
+                {
+                    if (selected_shape->type() == "rect")
+                    {
+                        std::shared_ptr<Rect> rect = std::dynamic_pointer_cast<Rect>(selected_shape);
+                        rect->x += delta.x();
+                        rect->y += delta.y();
+                        rect->width -= delta.x();
+                        rect->height -= delta.y();
+                    }
+                    else if (selected_shape->type() == "circle")
+                    {
+                        std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(selected_shape);
+                        circle->x += delta.x();
+                        circle->y += delta.y();
+                        circle->r -= std::max(delta.x(), delta.y()) / 2;
+                    }
+                    else if (selected_shape->type() == "line")
+                    {
+                        std::shared_ptr<Line> line = std::dynamic_pointer_cast<Line>(selected_shape);
+                        line->x1 += delta.x();
+                        line->y1 += delta.y();
+                    }
+                    else if (selected_shape->type() == "polyline")
+                    {
+                        // Resizing polyline from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "polygon")
+                    {
+                        // Resizing polygon from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "text")
+                    {
+                        std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(selected_shape);
+                        text->x += delta.x();
+                        text->y += delta.y();
+                        text->font_size -= std::max(delta.x(), delta.y()) / 10;
+                    }
+                }
+                else if (curr_handle == HandleType::BottomRight)
+                {
+                    if (selected_shape->type() == "rect")
+                    {
+                        std::shared_ptr<Rect> rect = std::dynamic_pointer_cast<Rect>(selected_shape);
+                        rect->x += delta.x();
+                        rect->y += delta.y();
+                        rect->width -= delta.x();
+                        rect->height -= delta.y();
+                    }
+                    else if (selected_shape->type() == "circle")
+                    {
+                        std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(selected_shape);
+                        circle->x += delta.x();
+                        circle->y += delta.y();
+                        circle->r -= std::max(delta.x(), delta.y()) / 2;
+                    }
+                    else if (selected_shape->type() == "line")
+                    {
+                        std::shared_ptr<Line> line = std::dynamic_pointer_cast<Line>(selected_shape);
+                        line->x1 += delta.x();
+                        line->y1 += delta.y();
+                    }
+                    else if (selected_shape->type() == "polyline")
+                    {
+                        // Resizing polyline from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "polygon")
+                    {
+                        // Resizing polygon from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "text")
+                    {
+                        std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(selected_shape);
+                        text->x += delta.x();
+                        text->y += delta.y();
+                        text->font_size -= std::max(delta.x(), delta.y()) / 10;
+                    }
+                }
+                else if (curr_handle == HandleType::TopCenter)
+                {
+                    if (selected_shape->type() == "rect")
+                    {
+                        std::shared_ptr<Rect> rect = std::dynamic_pointer_cast<Rect>(selected_shape);
+                        rect->x += delta.x();
+                        rect->y += delta.y();
+                        rect->width -= delta.x();
+                        rect->height -= delta.y();
+                    }
+                    else if (selected_shape->type() == "circle")
+                    {
+                        std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(selected_shape);
+                        circle->x += delta.x();
+                        circle->y += delta.y();
+                        circle->r -= std::max(delta.x(), delta.y()) / 2;
+                    }
+                    else if (selected_shape->type() == "line")
+                    {
+                        std::shared_ptr<Line> line = std::dynamic_pointer_cast<Line>(selected_shape);
+                        line->x1 += delta.x();
+                        line->y1 += delta.y();
+                    }
+                    else if (selected_shape->type() == "polyline")
+                    {
+                        // Resizing polyline from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "polygon")
+                    {
+                        // Resizing polygon from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "text")
+                    {
+                        std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(selected_shape);
+                        text->x += delta.x();
+                        text->y += delta.y();
+                        text->font_size -= std::max(delta.x(), delta.y()) / 10;
+                    }
+                }
+                else if (curr_handle == HandleType::MiddleLeft)
+                {
+                    if (selected_shape->type() == "rect")
+                    {
+                        std::shared_ptr<Rect> rect = std::dynamic_pointer_cast<Rect>(selected_shape);
+                        rect->x += delta.x();
+                        rect->y += delta.y();
+                        rect->width -= delta.x();
+                        rect->height -= delta.y();
+                    }
+                    else if (selected_shape->type() == "circle")
+                    {
+                        std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(selected_shape);
+                        circle->x += delta.x();
+                        circle->y += delta.y();
+                        circle->r -= std::max(delta.x(), delta.y()) / 2;
+                    }
+                    else if (selected_shape->type() == "line")
+                    {
+                        std::shared_ptr<Line> line = std::dynamic_pointer_cast<Line>(selected_shape);
+                        line->x1 += delta.x();
+                        line->y1 += delta.y();
+                    }
+                    else if (selected_shape->type() == "polyline")
+                    {
+                        // Resizing polyline from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "polygon")
+                    {
+                        // Resizing polygon from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "text")
+                    {
+                        std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(selected_shape);
+                        text->x += delta.x();
+                        text->y += delta.y();
+                        text->font_size -= std::max(delta.x(), delta.y()) / 10;
+                    }
+                }
+                else if (curr_handle == HandleType::MiddleRight)
+                {
+                    if (selected_shape->type() == "rect")
+                    {
+                        std::shared_ptr<Rect> rect = std::dynamic_pointer_cast<Rect>(selected_shape);
+                        rect->x += delta.x();
+                        rect->y += delta.y();
+                        rect->width -= delta.x();
+                        rect->height -= delta.y();
+                    }
+                    else if (selected_shape->type() == "circle")
+                    {
+                        std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(selected_shape);
+                        circle->x += delta.x();
+                        circle->y += delta.y();
+                        circle->r -= std::max(delta.x(), delta.y()) / 2;
+                    }
+                    else if (selected_shape->type() == "line")
+                    {
+                        std::shared_ptr<Line> line = std::dynamic_pointer_cast<Line>(selected_shape);
+                        line->x1 += delta.x();
+                        line->y1 += delta.y();
+                    }
+                    else if (selected_shape->type() == "polyline")
+                    {
+                        // Resizing polyline from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "polygon")
+                    {
+                        // Resizing polygon from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "text")
+                    {
+                        std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(selected_shape);
+                        text->x += delta.x();
+                        text->y += delta.y();
+                        text->font_size -= std::max(delta.x(), delta.y()) / 10;
+                    }
+                }
+                else if (curr_handle == HandleType::BottomCenter)
+                {
+                    if (selected_shape->type() == "rect")
+                    {
+                        std::shared_ptr<Rect> rect = std::dynamic_pointer_cast<Rect>(selected_shape);
+                        rect->x += delta.x();
+                        rect->y += delta.y();
+                        rect->width -= delta.x();
+                        rect->height -= delta.y();
+                    }
+                    else if (selected_shape->type() == "circle")
+                    {
+                        std::shared_ptr<Circle> circle = std::dynamic_pointer_cast<Circle>(selected_shape);
+                        circle->x += delta.x();
+                        circle->y += delta.y();
+                        circle->r -= std::max(delta.x(), delta.y()) / 2;
+                    }
+                    else if (selected_shape->type() == "line")
+                    {
+                        std::shared_ptr<Line> line = std::dynamic_pointer_cast<Line>(selected_shape);
+                        line->x1 += delta.x();
+                        line->y1 += delta.y();
+                    }
+                    else if (selected_shape->type() == "polyline")
+                    {
+                        // Resizing polyline from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "polygon")
+                    {
+                        // Resizing polygon from top-left handle is complex; skipping for simplicity
+                    }
+                    else if (selected_shape->type() == "text")
+                    {
+                        std::shared_ptr<Text> text = std::dynamic_pointer_cast<Text>(selected_shape);
+                        text->x += delta.x();
+                        text->y += delta.y();
+                        text->font_size -= std::max(delta.x(), delta.y()) / 10;
+                    }
+                }
+                update();
             }
-
-            update();
         }
     }
 
     void mouseReleaseEvent(QMouseEvent *event) override
     {
-        if (event->button() == Qt::LeftButton && dragging)
-        {
-            dragging = false;
-            curr_drag = nullptr;
-        }
+        dragging = false;
+        // selected_shape = nullptr;
+        is_resizing = false;
+        curr_handle = HandleType::None;
     }
 
     void paintEvent(QPaintEvent *event) override
@@ -164,15 +519,6 @@ protected:
         QPainter painter(this);
         painter.fillRect(event->rect(), QColor("#414141")); // Clear the canvas with gray background
         drawSVG(painter);
-
-        if (curr_hover)
-        {
-            QPainterPath path;
-            QPen pen;
-            createObject(curr_hover, path, pen);
-            QRectF bounds = path.boundingRect();
-            drawRotationIcon(&painter, bounds.topRight() + QPointF(10, -10), 10);
-        }
     }
 
     void drawRotationIcon(QPainter *p, QPointF center, double size)
@@ -185,9 +531,14 @@ protected:
 
 private:
     bool dragging{false};
+    bool is_resizing{false};
     QPoint last_point;
-    GraphicsObjectPtr curr_drag{nullptr};
-    GraphicsObjectPtr curr_hover{nullptr};
+    GraphicsObjectPtr selected_shape{nullptr};
+    HandleType curr_handle{HandleType::None};
+    QRectF start_rect;
+
+    const int handle_size = 8;
+    const int adjust = 20;
 
     SVG svg;
 
@@ -379,8 +730,6 @@ private:
 
         for (const GraphicsObjectPtr &obj : svg.objects)
         {
-            if (!obj)
-                continue;
             QPainterPath path;
             QPen pen;
             createObject(obj, path, pen);
@@ -412,7 +761,86 @@ private:
                 painter.drawPath(path);
                 painter.setTransform(QTransform()); // Reset transform
             }
+
+            if (obj == selected_shape)
+            {
+                painter.save();
+                QPen handlePen(Qt::blue, 1, Qt::DashLine);
+                painter.setPen(handlePen);
+                painter.setBrush(Qt::NoBrush);
+                painter.drawRect(path.boundingRect().adjusted(-adjust, -adjust, adjust, adjust)); // Draw bounding box with some padding
+
+                painter.setPen(Qt::blue);
+                painter.setBrush(Qt::white);
+                for (int i = 0; i < 8; ++i)
+                {
+                    QRectF handleRect = renderHandle(path.boundingRect().adjusted(-adjust, -adjust, adjust, adjust), static_cast<HandleType>(i));
+                    painter.drawRect(handleRect);
+                }
+                painter.restore();
+            }
         }
+    }
+
+    QRectF renderHandle(const QRectF &obj, HandleType handle_type)
+    {
+        double x, y;
+        switch (handle_type)
+        {
+        case HandleType::TopLeft:
+            x = obj.left();
+            y = obj.top();
+            break;
+        case HandleType::TopCenter:
+            x = obj.center().x();
+            y = obj.top();
+            break;
+        case HandleType::TopRight:
+            x = obj.right();
+            y = obj.top();
+            break;
+        case HandleType::MiddleLeft:
+            x = obj.left();
+            y = obj.center().y();
+            break;
+        case HandleType::MiddleRight:
+            x = obj.right();
+            y = obj.center().y();
+            break;
+        case HandleType::BottomLeft:
+            x = obj.left();
+            y = obj.bottom();
+            break;
+        case HandleType::BottomCenter:
+            x = obj.center().x();
+            y = obj.bottom();
+            break;
+        case HandleType::BottomRight:
+            x = obj.right();
+            y = obj.bottom();
+            break;
+        default:
+            x = obj.left();
+            y = obj.top();
+            break;
+        }
+
+        // Update QRectF to handle the adjusted bounding box
+        return QRectF(x - handle_size / 2, y - handle_size / 2, handle_size, handle_size);
+    }
+
+    HandleType hitTestHandles(const QRectF &obj, const QPointF &point)
+    {
+        for (int i = 0; i < 8; ++i)
+        {
+            QRectF handleRect = renderHandle(obj, static_cast<HandleType>(i));
+            if (handleRect.contains(point))
+            {
+                return static_cast<HandleType>(i);
+            }
+        }
+
+        return HandleType::None;
     }
 };
 

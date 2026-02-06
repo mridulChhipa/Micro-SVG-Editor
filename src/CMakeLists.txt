@@ -6,6 +6,7 @@ set(SRC_SOURCES
 set(SRC_HEADERS
     ui/AppWindow.hpp
     ui/canvas/Canvas.hpp
+    ui/canvas/HandleType.hpp
     ui/MenuBar.hpp
     ui/TopToolBar.hpp
     ui/LeftToolBar.hpp

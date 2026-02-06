@@ -135,10 +135,10 @@ public:
                                 svg.add(std::make_shared<Text>(attributes));
 
                             std::cout << "Created " << tagName << " with attributes:\n";
-                            for (const auto &attr : attributes)
-                            {
-                                std::cout << "  " << attr.first << " = " << attr.second << "\n";
-                            }
+                            // for (const auto &attr : attributes)
+                            // {
+                            //     std::cout << "  " << attr.first << " = " << attr.second << "\n";
+                            // }
                         }
                     }
                 }

@@ -44,3 +44,7 @@ Run the following commands to
 - **Note** When you will install libgl and mesa, then version 25.2.8 of mesa does not support gpu-acceleration due to which you may need to downgrade to version 24 of mesa. The following command will help you for the corresponding task `
 sudo apt-get install --allow-downgrades libgl1-mesa-dri=24.0.5-1ubuntu1 libglx-mesa0=24.0.5-1ubuntu1 libglapi-mesa=24.0.5-1ubuntu1 libegl-mesa0=24.0.5-1ubuntu1 libgbm1=24.0.5-1ubuntu1
 `
+
+## Potential Future Optimizations
+- Use QuadTrees for optimization if needed in future
+- Use Debouncer for optimizing mouse move events if needed in future
