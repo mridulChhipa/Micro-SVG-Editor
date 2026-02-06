@@ -7,7 +7,7 @@
 #include "../model/Circle.hpp"
 #include "../model/Line.hpp"
 #include "../model/Polyline.hpp"
-#include "../model/Polygon.hpp"
+#include "../model/Hexagon.hpp"
 #include "../model/Text.hpp"
 
 #include <unordered_map>
@@ -130,7 +130,7 @@ public:
                             else if (tagName == "polyline")
                                 svg.add(std::make_shared<Polyline>(attributes));
                             else if (tagName == "polygon")
-                                svg.add(std::make_shared<Polygon>(attributes));
+                                svg.add(std::make_shared<Hexagon>(attributes));
                             if (tagName == "text")
                                 svg.add(std::make_shared<Text>(attributes));
 
