@@ -23,11 +23,12 @@
 #include "../../model/Circle.hpp"
 #include "../../model/Line.hpp"
 #include "../../model/Polyline.hpp"
+#include "../../model/Path.hpp"
 #include "../../model/Hexagon.hpp"
 #include "../../model/Text.hpp"
 #include "HandleType.hpp"
 
-using ShapeVariant = std::variant<std::shared_ptr<Rect>, std::shared_ptr<Circle>, std::shared_ptr<Line>, std::shared_ptr<Polyline>, std::shared_ptr<Hexagon>, std::shared_ptr<Text>>;
+using ShapeVariant = std::variant<std::shared_ptr<Rect>, std::shared_ptr<Circle>, std::shared_ptr<Line>, std::shared_ptr<Polyline>, std::shared_ptr<Path>, std::shared_ptr<Hexagon>, std::shared_ptr<Text>>;
 
 class Canvas : public QWidget
 {
@@ -40,12 +41,15 @@ private:
     HandleType curr_handle{HandleType::None};
     QRectF start_rect;
     QString currentTool;
-    
+
     QVector<SVG> undoStack;
     QVector<SVG> redoStack;
     QVector<SVG> undoStackTemp;
     bool isPerformingUndoRedo{false};
     std::string undoRedoSVG;
+    bool is_drawing = false;
+
+    QPainterPath current_path;
 
     const int handle_size = 8;
     const int adjust = 20;
@@ -65,6 +69,8 @@ private:
             return std::dynamic_pointer_cast<Polyline>(obj);
         if (t == "hexagon")
             return std::dynamic_pointer_cast<Hexagon>(obj);
+        if (t == "path")
+            return std::dynamic_pointer_cast<Path>(obj);
         if (t == "text")
             return std::dynamic_pointer_cast<Text>(obj);
         return std::nullopt;
@@ -86,6 +92,7 @@ private:
     void buildShapePath(QPainterPath &path, const std::shared_ptr<Circle> &s);
     void buildShapePath(QPainterPath &path, const std::shared_ptr<Line> &s);
     void buildShapePath(QPainterPath &path, const std::shared_ptr<Polyline> &s);
+    void buildShapePath(QPainterPath &path, const std::shared_ptr<Path> &s);
     void buildShapePath(QPainterPath &path, const std::shared_ptr<Hexagon> &s);
     void buildShapePath(QPainterPath &path, const std::shared_ptr<Text> &s);
 
@@ -102,8 +109,19 @@ protected:
     void paintEvent(QPaintEvent *event) override
     {
         QPainter painter(this);
+        painter.setRenderHint(QPainter::Antialiasing); // Makes lines smooth
         painter.fillRect(event->rect(), QColor("#414141"));
         drawSVG(painter);
+
+        if (!current_path.isEmpty())
+        {
+            QPen pen(Qt::black, 2);          // Color black, width 2
+            pen.setJoinStyle(Qt::RoundJoin); // Smooth corners
+            pen.setCapStyle(Qt::RoundCap);   // Smooth ends
+            painter.setPen(pen);
+
+            painter.drawPath(current_path);
+        }
     }
 
 public:
@@ -116,6 +134,7 @@ public:
     void updateCanvas(const SVG &newSvg)
     {
         svg = newSvg;
+        // std::cout << svg.toSVG() << std::endl;
         update();
     }
 

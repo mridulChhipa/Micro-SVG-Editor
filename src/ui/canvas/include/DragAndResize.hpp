@@ -27,6 +27,17 @@ inline void Canvas::applyDrag(const QPoint &delta)
                 s->x2 += delta.x();
                 s->y2 += delta.y();
             }
+            else if constexpr (std::is_same_v<T, std::shared_ptr<Path>>)
+            {
+                for (auto &[_, points] : s->commands)
+                {
+                    for (auto &[x, y] : points)
+                    {
+                        x += delta.x();
+                        y += delta.y();
+                    }
+                }
+            }
             else if constexpr (std::is_same_v<T, std::shared_ptr<Polyline>> ||
                                std::is_same_v<T, std::shared_ptr<Hexagon>>)
             {

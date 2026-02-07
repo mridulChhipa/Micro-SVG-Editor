@@ -55,4 +55,25 @@ inline void Canvas::buildShapePath(QPainterPath &path, const std::shared_ptr<Tex
     path.addText(QPointF(s->x, s->y), font, QString::fromStdString(s->content));
 }
 
+inline void Canvas::buildShapePath(QPainterPath &path, const std::shared_ptr<Path> &s)
+{
+    for (const auto &[command, points] : s->commands)
+    {
+        if (command == 'M')
+            path.moveTo(QPointF(points[0].first, points[0].second));
+        else if (command == 'L')
+            path.lineTo(QPointF(points[0].first, points[0].second));
+        else if (command == 'C')
+            path.cubicTo(QPointF(points[0].first, points[0].second), QPointF(points[1].first, points[1].second), QPointF(points[2].first, points[2].second));
+        else if (command == 'Q')
+            path.quadTo(QPointF(points[0].first, points[0].second), QPointF(points[1].first, points[1].second));
+        else if (command == 'H')
+            path.lineTo(QPointF(points[0].first, path.currentPosition().y()));
+        else if (command == 'V')
+            path.lineTo(QPointF(path.currentPosition().x(), points[0].first));
+        else if (command == 'Z')
+            path.closeSubpath();
+    }
+}
+
 #endif

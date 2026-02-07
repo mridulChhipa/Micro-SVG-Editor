@@ -86,6 +86,10 @@ inline void Canvas::setCurrentTool(const QString &toolName)
             }
         }
         currentTool = "";
+    } else if (currentTool == "Freehand")
+    {
+        // Freehand drawing logic will be handled in mouse events
+        // Just set the current tool and wait for user interaction
     }
 
     if (edited)

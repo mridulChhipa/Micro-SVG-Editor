@@ -1,0 +1,83 @@
+#ifndef PATH_HPP
+#define PATH_HPP
+
+#include "GraphicsObject.hpp"
+#include <sstream>
+#include <string>
+
+class Path : public GraphicsObject
+{
+public:
+    std::vector<std::pair<char, std::vector<std::pair<float, float>>>> commands;
+    Path() = default;
+    Path(const std::unordered_map<std::string, std::string> &attributes)
+    {
+        initialiseStyle(attributes);
+        if (attributes.count("d"))
+        {
+            std::cout << "Parsing path data: " << attributes.at("d") << std::endl;
+            std::istringstream ss(attributes.at("d"));
+            char command;
+            float x, y;
+            while (ss >> command)
+            {
+                std::vector<std::pair<float, float>> points;
+
+                // Use a loop that checks if the NEXT character is a digit or a sign
+                // This prevents the inner loop from consuming the next command letter
+                while (ss >> std::ws && (std::isdigit(ss.peek()) || ss.peek() == '-' || ss.peek() == '.'))
+                {
+                    if (ss >> x >> y)
+                    {
+                        points.emplace_back(x, y);
+                    }
+                    else
+                    {
+                        ss.clear(); // Clear fail bit if coordinates are malformed
+                        break;
+                    }
+                }
+
+                commands.emplace_back(command, points);
+
+                // If the inner loop failed to find a number, the stream might be
+                // in a fail state. We clear it so the outer loop can read the next 'command'.
+                ss.clear();
+            }
+        }
+    }
+
+    ~Path() = default;
+
+    std::string type() const override { return "path"; }
+    std::string toSVG() const override
+    {
+        std::ostringstream ss;
+        ss << "<path" << printStyle() << " d=\"";
+        for (const auto &[command, points] : commands)
+        {
+            ss << command << " ";
+            for (const auto &[x, y] : points)
+            {
+                ss << x << " " << y << " ";
+            }
+        }
+        ss << "\"/>";
+        return ss.str();
+    }
+    std::shared_ptr<GraphicsObject> clone() const override
+    {
+        auto copy = std::make_shared<Path>();
+        copy->commands = commands;
+        copy->fill = fill;
+        copy->stroke = stroke;
+        copy->stroke_width = stroke_width;
+        copy->stroke_opacity = stroke_opacity;
+        copy->stroke_linecap = stroke_linecap;
+        copy->stroke_linejoin = stroke_linejoin;
+        copy->stroke_dasharray = stroke_dasharray;
+        copy->transform = transform;
+        return copy;
+    }
+};
+#endif

@@ -5,11 +5,19 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
 {
     if (isPerformingUndoRedo)
         return;
-    if (currentTool != "")
+    if (currentTool != "" && currentTool != "Freehand")
     {
         std::cout << "Adding shape: " << currentTool.toStdString() << std::endl;
         addShapeToCanvas(currentTool.toStdString());
         update();
+    }
+
+    if (event->button() == Qt::LeftButton && currentTool == "Freehand")
+    {
+        current_path = QPainterPath();
+        current_path.moveTo(event->pos());
+        is_drawing = true;
+        return;
     }
 
     if (selected_shape)
@@ -95,6 +103,12 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
 
 inline void Canvas::mouseMoveEvent(QMouseEvent *event)
 {
+    if ((event->buttons() & Qt::LeftButton) && is_drawing && currentTool == "Freehand")
+    {
+        current_path.lineTo(event->pos());
+        update();
+    }
+
     if (!(event->buttons() & Qt::LeftButton) || !selected_shape || (!dragging && !is_resizing))
         return;
 
@@ -122,6 +136,58 @@ inline void Canvas::mouseReleaseEvent(QMouseEvent *event)
     dragging = false;
     is_resizing = false;
     curr_handle = HandleType::None;
+
+    if (event->button() == Qt::LeftButton && is_drawing && currentTool == "Freehand")
+    {
+        SVG prevSVG = svg.clone();
+
+        is_drawing = false;
+        std::shared_ptr<Path> newPath = std::make_shared<Path>();
+        for (int i = 0; i < current_path.elementCount(); ++i)
+        {
+            const QPainterPath::Element &e = current_path.elementAt(i);
+
+            if (e.isMoveTo())
+            {
+                std::vector<std::pair<float, float>> points;
+                points.push_back({static_cast<float>(e.x), static_cast<float>(e.y)});
+
+                newPath->commands.push_back({'M', points});
+            }
+            else if (e.isLineTo())
+            {
+                std::vector<std::pair<float, float>> points;
+                points.push_back({static_cast<float>(e.x), static_cast<float>(e.y)});
+
+                newPath->commands.push_back({'L', points});
+            }
+            else if (e.isCurveTo())
+            {
+                if (i + 2 < current_path.elementCount())
+                {
+                    std::vector<std::pair<float, float>> points;
+
+                    points.push_back({static_cast<float>(e.x), static_cast<float>(e.y)});
+
+                    const QPainterPath::Element &cp2 = current_path.elementAt(i + 1);
+                    points.push_back({static_cast<float>(cp2.x), static_cast<float>(cp2.y)});
+
+                    const QPainterPath::Element &end = current_path.elementAt(i + 2);
+                    points.push_back({static_cast<float>(end.x), static_cast<float>(end.y)});
+
+                    newPath->commands.push_back({'C', points});
+
+                    i += 2;
+                }
+            }
+        }
+    
+        svg.objects.push_back(newPath);
+        current_path = QPainterPath();
+        undoStack.push_back(prevSVG);
+        redoStack.clear();
+        update();
+    }
 
     if (isPerformingUndoRedo)
     {

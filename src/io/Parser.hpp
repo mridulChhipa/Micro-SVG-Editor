@@ -7,6 +7,7 @@
 #include "../model/Circle.hpp"
 #include "../model/Line.hpp"
 #include "../model/Polyline.hpp"
+#include "../model/Path.hpp"
 #include "../model/Hexagon.hpp"
 #include "../model/Text.hpp"
 
@@ -131,8 +132,11 @@ public:
                                 svg.add(std::make_shared<Polyline>(attributes));
                             else if (tagName == "polygon")
                                 svg.add(std::make_shared<Hexagon>(attributes));
-                            if (tagName == "text")
+                            else if (tagName == "path")
+                                svg.add(std::make_shared<Path>(attributes));
+                            else if (tagName == "text")
                                 svg.add(std::make_shared<Text>(attributes));
+                            
 
                             // std::cout << "Created " << tagName << " with attributes:\n";
                             // for (const auto &attr : attributes)
