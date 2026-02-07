@@ -51,6 +51,8 @@ private:
 
     QPainterPath current_path;
 
+    GraphicsObjectPtr clipboard_shape{nullptr};
+
     const int handle_size = 8;
     const int adjust = 20;
 
@@ -97,6 +99,14 @@ private:
     void buildShapePath(QPainterPath &path, const std::shared_ptr<Text> &s);
 
     void addShapeToCanvas(const std::string);
+    QPointF toCanvasCoordinates(QPointF point)
+    {
+        float x_offset = (width() - svg.width) / 2.0f;
+        float y_offset = (height() - svg.height) / 2.0f;
+        point.setX(point.x() - x_offset);
+        point.setY(point.y() - y_offset);
+        return point;
+    }
 
     QRectF renderHandle(const QRectF &obj, HandleType handle_type);
     HandleType hitTestHandles(const QRectF &obj, const QPointF &point);
@@ -110,7 +120,19 @@ protected:
     {
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing); // Makes lines smooth
-        painter.fillRect(event->rect(), QColor("#414141"));
+        painter.fillRect(event->rect(), Qt::darkGray); // Canvas edge empty space fill
+
+        float x_offset = (width() - svg.width) / 2.0f;
+        float y_offset = (height() - svg.height) / 2.0f;
+
+        painter.translate(x_offset, y_offset);
+        QRectF drawing_area(0, 0, svg.width, svg.height);
+        painter.setBrush(QColor(50, 50, 50));
+        painter.setPen(Qt::NoPen);
+        painter.drawRect(drawing_area);
+
+        painter.setClipRect(drawing_area);
+
         drawSVG(painter);
 
         if (!current_path.isEmpty())
@@ -149,6 +171,10 @@ public:
     void setCurrentTool(const QString &toolName);
     void undo();
     void redo();
+    
+    void cut();
+    void copy();
+    void paste();
 };
 
 #include "./include/StackOperations.hpp"

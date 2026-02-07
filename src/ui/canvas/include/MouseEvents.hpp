@@ -3,6 +3,7 @@
 
 inline void Canvas::mousePressEvent(QMouseEvent *event)
 {
+    QPointF canvasPoint = toCanvasCoordinates(event->pos());
     if (isPerformingUndoRedo)
         return;
     if (currentTool != "" && currentTool != "Freehand")
@@ -15,7 +16,7 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
     if (event->button() == Qt::LeftButton && currentTool == "Freehand")
     {
         current_path = QPainterPath();
-        current_path.moveTo(event->pos());
+        current_path.moveTo(canvasPoint);
         is_drawing = true;
         return;
     }
@@ -28,7 +29,7 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
         createObject(selected_shape, selPath, selPen);
         QTransform transform = findTransform(selected_shape);
 
-        QPointF localPoint = event->pos();
+        QPointF localPoint = toCanvasCoordinates(event->pos());
         if (!transform.isIdentity())
         {
             QTransform inverted = transform.inverted();
@@ -49,7 +50,7 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
 
             curr_handle = handle;
             start_rect = boundingRect;
-            last_point = event->pos();
+            last_point = toCanvasCoordinates(event->pos()).toPoint();
             dragging = false;
             return;
         }
@@ -68,7 +69,7 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
         createObject(obj, path, pen);
         QTransform transform = findTransform(obj);
 
-        QPointF localPoint = event->pos();
+        QPointF localPoint = toCanvasCoordinates(event->pos());
         if (!transform.isIdentity())
         {
             QTransform inverted = transform.inverted();
@@ -81,7 +82,7 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
             {
                 dragging = true;
                 selected_shape = obj;
-                last_point = event->pos();
+                last_point = toCanvasCoordinates(event->pos()).toPoint();
                 undoStackTemp.push_back(svg.clone());
                 undoRedoSVG = svg.toSVG();
                 isPerformingUndoRedo = true;
@@ -92,7 +93,7 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
         {
             dragging = true;
             selected_shape = obj;
-            last_point = event->pos();
+            last_point = toCanvasCoordinates(event->pos()).toPoint();
             undoStackTemp.push_back(svg.clone());
             undoRedoSVG = svg.toSVG();
             isPerformingUndoRedo = true;
@@ -105,15 +106,15 @@ inline void Canvas::mouseMoveEvent(QMouseEvent *event)
 {
     if ((event->buttons() & Qt::LeftButton) && is_drawing && currentTool == "Freehand")
     {
-        current_path.lineTo(event->pos());
+        current_path.lineTo(toCanvasCoordinates(event->pos()));
         update();
     }
 
     if (!(event->buttons() & Qt::LeftButton) || !selected_shape || (!dragging && !is_resizing))
         return;
 
-    QPoint delta = event->pos() - last_point;
-    last_point = event->pos();
+    QPoint delta = toCanvasCoordinates(event->pos()).toPoint() - last_point;
+    last_point = toCanvasCoordinates(event->pos()).toPoint();
 
     QTransform transform = findTransform(selected_shape);
     if (!transform.isIdentity())

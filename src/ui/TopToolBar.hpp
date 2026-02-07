@@ -38,7 +38,6 @@ private:
         }
 
         QAction *selectAction = addToolAction("Select", true, actionGroup);
-        QAction *moveAction = addToolAction("Move", true, actionGroup);
         QAction *rectangleAction = addToolAction("Rectangle", true, actionGroup, ":ui/icons/rectangle.jpg", "Rectangle");
         QAction *circleAction = addToolAction("Circle", true, actionGroup, ":ui/icons/circle.jpg", "Circle");
         QAction *lineAction = addToolAction("Line", true, actionGroup, ":ui/icons/line.jpg", "Line");
@@ -48,7 +47,6 @@ private:
         QAction *textEditAction = addToolAction("Text Edit", false, actionGroup);
 
         connect(selectAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
-        connect(moveAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
         connect(rectangleAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
         connect(circleAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
         connect(lineAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);

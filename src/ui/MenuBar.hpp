@@ -44,12 +44,15 @@ public:
         QAction *undoAction = editMenu->addAction("Undo");
         QAction *redoAction = editMenu->addAction("Redo");
         editMenu->addSeparator();
-        editMenu->addAction("Cut");
-        editMenu->addAction("Copy");
-        editMenu->addAction("Paste");
+        QAction *cutAction = editMenu->addAction("Cut");
+        QAction *copyAction = editMenu->addAction("Copy");
+        QAction *pasteAction = editMenu->addAction("Paste");
 
         connect(undoAction, &QAction::triggered, this, &MenuBar::undoRequested);
         connect(redoAction, &QAction::triggered, this, &MenuBar::redoRequested);
+        connect(cutAction, &QAction::triggered, this, &MenuBar::cutRequested);
+        connect(copyAction, &QAction::triggered, this, &MenuBar::copyRequested);
+        connect(pasteAction, &QAction::triggered, this, &MenuBar::pasteRequested);
 
         // View Menu
         QMenu *viewMenu = this->addMenu("View");
@@ -68,7 +71,12 @@ signals:
     void saveAsRequested();
     void clearRequested();
     void newRequested();
+    
     void undoRequested();
     void redoRequested();
+
+    void cutRequested();
+    void copyRequested();
+    void pasteRequested();
 };
 #endif

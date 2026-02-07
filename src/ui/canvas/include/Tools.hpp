@@ -86,10 +86,55 @@ inline void Canvas::setCurrentTool(const QString &toolName)
             }
         }
         currentTool = "";
-    } else if (currentTool == "Freehand")
+    }
+    else if (currentTool == "Border Radius")
     {
-        // Freehand drawing logic will be handled in mouse events
-        // Just set the current tool and wait for user interaction
+        if (selected_shape != nullptr && (selected_shape->type() == "rect" || selected_shape->type() == "ellipse"))
+        {
+            bool ok;
+            int newRadius = QInputDialog::getInt(this, "Border Radius",
+                                                 "Enter border radius:",
+                                                 0, 0, 100, 1, &ok);
+            if (ok)
+            {
+                if (selected_shape->type() == "rect")
+                {
+                    auto rect_obj = std::dynamic_pointer_cast<Rect>(*std::find(svg.objects.begin(), svg.objects.end(), selected_shape));
+                    if (rect_obj)
+                    {
+                        rect_obj->rx = newRadius;
+                        rect_obj->ry = newRadius;
+                        edited = true;
+                        update();
+                    }
+                }
+            }
+        }
+        currentTool = "";
+    }
+    else if (currentTool == "Canvas Dimensions")
+    {
+        bool okWidth, okHeight;
+        int newWidth = QInputDialog::getInt(this, "Canvas Width",
+                                            "Enter canvas width:",
+                                            static_cast<int>(svg.width), 1, 5000, 1, &okWidth);
+        int newHeight = QInputDialog::getInt(this, "Canvas Height",
+                                             "Enter canvas height:",
+                                             static_cast<int>(svg.height), 1, 5000, 1, &okHeight);
+        if (okWidth && okHeight)
+        {
+            svg.width = newWidth;
+            svg.height = newHeight;
+            edited = true;
+            update();
+        }
+
+        currentTool = "";
+    } else if (currentTool == "Select")
+    {
+        // No specific action needed for select tool here
+        selected_shape = nullptr; // Deselect any currently selected shape
+        update();
     }
 
     if (edited)

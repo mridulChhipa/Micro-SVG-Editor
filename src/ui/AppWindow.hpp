@@ -91,13 +91,19 @@ public:
         connect(menuBar, &MenuBar::undoRequested, drawingCanvas, &Canvas::undo);
         connect(menuBar, &MenuBar::redoRequested, drawingCanvas, &Canvas::redo);
 
+        connect(menuBar, &MenuBar::cutRequested, drawingCanvas, &Canvas::cut);
+        connect(menuBar, &MenuBar::copyRequested, drawingCanvas, &Canvas::copy);
+        connect(menuBar, &MenuBar::pasteRequested, drawingCanvas, &Canvas::paste);
+
         TopToolBar *topToolBar = new TopToolBar("Top Tools", this, toolActionGroup);
         topToolBar->setObjectName("TopToolBar");
+        topToolBar->setMovable(false);
         addToolBar(Qt::TopToolBarArea, topToolBar);
         connect(topToolBar, &TopToolBar::toolSelected, drawingCanvas, &Canvas::setCurrentTool);
 
         LeftToolBar *leftToolBar = new LeftToolBar("Tools", this, toolActionGroup);
         leftToolBar->setObjectName("LeftToolBar");
+        leftToolBar->setMovable(false);
         addToolBar(Qt::LeftToolBarArea, leftToolBar);
         connect(leftToolBar, &LeftToolBar::toolSelected, drawingCanvas, &Canvas::setCurrentTool);
     }

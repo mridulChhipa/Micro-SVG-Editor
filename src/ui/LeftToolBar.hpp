@@ -41,10 +41,14 @@ private:
         QAction *hexagonAction = addToolAction("Hexagon", true, actionGroup, ":ui/icons/polygon.jpg", "Hexagon");
         QAction *freehandAction = addToolAction("Freehand", true, actionGroup);
         QAction *textAction = addToolAction("Text", true, actionGroup);
+        QAction *borderRadiusAction = addToolAction("Border Radius", false, actionGroup);
+        QAction *canvasDimensionsAction = addToolAction("Canvas Dimensions", false, actionGroup);
 
         connect(hexagonAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
         connect(freehandAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
         connect(textAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
+        connect(borderRadiusAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
+        connect(canvasDimensionsAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
     }
 
 public:
