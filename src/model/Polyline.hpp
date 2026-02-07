@@ -45,6 +45,23 @@ public:
         ss << "\" " << printStyle() << "/>";
         return ss.str();
     }
+
+    std::shared_ptr<GraphicsObject> clone() const override
+    {
+        auto copy = std::make_shared<Polyline>();
+        copy->points = points;
+        copy->fill = fill;
+        copy->stroke = stroke;
+        copy->stroke_width = stroke_width;
+        copy->stroke_opacity = stroke_opacity;
+        copy->stroke_linecap = stroke_linecap;
+        copy->stroke_linejoin = stroke_linejoin;
+        copy->stroke_dasharray = stroke_dasharray;
+        copy->transform = transform;
+        copy->opacity = opacity;
+        copy->visibility = visibility;
+        return copy;
+    }
 };
 
 #endif

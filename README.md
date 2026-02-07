@@ -45,6 +45,16 @@ Run the following commands to
 sudo apt-get install --allow-downgrades libgl1-mesa-dri=24.0.5-1ubuntu1 libglx-mesa0=24.0.5-1ubuntu1 libglapi-mesa=24.0.5-1ubuntu1 libegl-mesa0=24.0.5-1ubuntu1 libgbm1=24.0.5-1ubuntu1
 `
 
-## Potential Future Optimizations
+# Design Decisions
+- This assignment had a strong emphasis on ownership and scoping of variables. One of the places where did placed a major role was when we do undo-redo operations. Putting a SVG object in the stack creates a shallow copy which updates the SVG->objects because they are references and therefore even though we add a SVG object to the stack.
+    - Question: Why is creation of a shallow copy is not needed when we add a new shape ? 
+    - Answer: Because whenver I am adding a new shape, a new pointer is created therefore, since SVG is not a ptr, therefore its object vector has distinct elements though all the old and new ptrs still exist.
+    - Therefore to handle this, a clone function was added to SVG and GraphicsObject (for deepcopy of SVG)
+
+- Connections and signals were used to connect various components of the UI (eg. Canvas, MenuBar, TopToolBar, etc)
+- To reduce complexity of undo-redo operations we have been adding the complete SVG and not the changes.
+- To make components as much reusable, the reader and lexer were implemented seprately from the parser.
+
+## Potential Scopes for Optimization
 - Use QuadTrees for optimization if needed in future
 - Use Debouncer for optimizing mouse move events if needed in future

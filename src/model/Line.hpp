@@ -33,6 +33,30 @@ public:
         ss << "x2=\"" << x2 << "\" y2=\"" << y2 << "\" " << printStyle() << " />";
         return ss.str();
     }
+
+    std::shared_ptr<GraphicsObject> clone() const override
+    {
+        auto copy = std::make_shared<Line>();
+        copy->x1 = x1;
+        copy->y1 = y1;
+        copy->x2 = x2;
+        copy->y2 = y2;
+        copy->id = id;
+        copy->class_name = class_name;
+        copy->style = style;
+        copy->fill = fill;
+        copy->fill_opacity = fill_opacity;
+        copy->stroke = stroke;
+        copy->stroke_width = stroke_width;
+        copy->stroke_opacity = stroke_opacity;
+        copy->stroke_linecap = stroke_linecap;
+        copy->stroke_linejoin = stroke_linejoin;
+        copy->stroke_dasharray = stroke_dasharray;
+        copy->transform = transform;
+        copy->opacity = opacity;
+        copy->visibility = visibility;
+        return copy;
+    }
 };
 
 #endif

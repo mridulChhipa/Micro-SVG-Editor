@@ -30,10 +30,13 @@ private:
         return action;
     };
 
-    void setupToolbar()
+    void setupToolbar(QActionGroup *actionGroup = nullptr)
     {
-        QActionGroup *actionGroup = new QActionGroup(this);
-        actionGroup->setExclusive(true);
+        if (!actionGroup)
+        {
+            actionGroup = new QActionGroup(this);
+            actionGroup->setExclusive(true);
+        }
 
         QAction *hexagonAction = addToolAction("Hexagon", true, actionGroup, ":ui/icons/polygon.jpg", "Hexagon");
         QAction *freehandAction = addToolAction("Freehand", true, actionGroup);
@@ -45,10 +48,10 @@ private:
     }
 
 public:
-    LeftToolBar(const QString &title, QWidget *parent = nullptr) : QToolBar(title, parent)
+    LeftToolBar(const QString &title, QWidget *parent = nullptr, QActionGroup *actionGroup = nullptr) : QToolBar(title, parent)
     {
         // Toolbar setup can be done here
-        setupToolbar();
+        setupToolbar(actionGroup);
     }
 
 private slots:

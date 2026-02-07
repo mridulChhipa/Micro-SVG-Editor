@@ -3,6 +3,8 @@
 
 inline void Canvas::mousePressEvent(QMouseEvent *event)
 {
+    if (isPerformingUndoRedo)
+        return;
     if (currentTool != "")
     {
         std::cout << "Adding shape: " << currentTool.toStdString() << std::endl;
@@ -12,6 +14,7 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
 
     if (selected_shape)
     {
+        isPerformingUndoRedo = false;
         QPainterPath selPath;
         QPen selPen;
         createObject(selected_shape, selPath, selPen);
@@ -30,6 +33,12 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
         if (handle != HandleType::None)
         {
             is_resizing = true;
+
+            isPerformingUndoRedo = true;
+
+            undoRedoSVG = svg.toSVG();
+            undoStackTemp.push_back(svg.clone()); // Save current state for potential undo
+
             curr_handle = handle;
             start_rect = boundingRect;
             last_point = event->pos();
@@ -42,6 +51,7 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
     dragging = false;
     is_resizing = false;
     curr_handle = HandleType::None;
+    isPerformingUndoRedo = false;
 
     for (const GraphicsObjectPtr &obj : svg.objects | std::views::reverse)
     {
@@ -64,6 +74,9 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
                 dragging = true;
                 selected_shape = obj;
                 last_point = event->pos();
+                undoStackTemp.push_back(svg.clone());
+                undoRedoSVG = svg.toSVG();
+                isPerformingUndoRedo = true;
                 break;
             }
         }
@@ -72,6 +85,9 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
             dragging = true;
             selected_shape = obj;
             last_point = event->pos();
+            undoStackTemp.push_back(svg.clone());
+            undoRedoSVG = svg.toSVG();
+            isPerformingUndoRedo = true;
             break;
         }
     }
@@ -94,13 +110,9 @@ inline void Canvas::mouseMoveEvent(QMouseEvent *event)
     }
 
     if (!is_resizing)
-    {
         applyDrag(delta);
-    }
     else
-    {
         applyResize(delta, curr_handle);
-    }
     update();
 }
 
@@ -110,6 +122,19 @@ inline void Canvas::mouseReleaseEvent(QMouseEvent *event)
     dragging = false;
     is_resizing = false;
     curr_handle = HandleType::None;
+
+    if (isPerformingUndoRedo)
+    {
+        // std::cout << undoRedoSVG << std::endl;
+        // std::cout << "Pushing to undo stack Check 1 " << (undoStackTemp.back().toSVG() == svg.toSVG() ? "No changes" : "Changes detected") << std::endl;
+        // std::cout << "Pushing to undo stack Check 2 " << (undoStackTemp.back().toSVG() == undoRedoSVG ? "No changes" : "Changes detected") << std::endl;
+        // std::cout << "Pushing to undo stack Check 3 " << (undoRedoSVG == svg.toSVG() ? "No changes" : "Changes detected") << std::endl;
+        undoStack.push_back(undoStackTemp.back().clone());
+        undoStackTemp.clear();
+        redoStack.clear();
+        undoRedoSVG.clear();
+        isPerformingUndoRedo = false;
+    }
 }
 
 #endif

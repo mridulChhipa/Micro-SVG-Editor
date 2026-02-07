@@ -3,6 +3,8 @@
 
 inline void Canvas::addShapeToCanvas(const std::string shapeType)
 {
+    bool shapeAdded = false;
+    SVG prevState = svg; // Save current state for undo
     if (shapeType == "Rectangle")
     {
         auto rect = std::make_shared<Rect>();
@@ -11,6 +13,7 @@ inline void Canvas::addShapeToCanvas(const std::string shapeType)
         rect->width = 100;
         rect->height = 100;
         svg.objects.push_back(rect);
+        shapeAdded = true;
     }
     else if (shapeType == "Circle")
     {
@@ -19,6 +22,7 @@ inline void Canvas::addShapeToCanvas(const std::string shapeType)
         circle->y = 150;
         circle->r = 50;
         svg.objects.push_back(circle);
+        shapeAdded = true;
     }
     else if (shapeType == "Line")
     {
@@ -30,12 +34,14 @@ inline void Canvas::addShapeToCanvas(const std::string shapeType)
         line->stroke = "blue";
         line->stroke_width = 5.0f;
         svg.objects.push_back(line);
+        shapeAdded = true;
     }
     else if (shapeType == "Polyline")
     {
         auto polyline = std::make_shared<Polyline>();
         polyline->points = {{350, 350}, {400, 400}, {450, 350}};
         svg.objects.push_back(polyline);
+        shapeAdded = true;
     }
     else if (shapeType == "Hexagon")
     {
@@ -52,6 +58,7 @@ inline void Canvas::addShapeToCanvas(const std::string shapeType)
             hexagon->points.emplace_back(px, py);
         }
         svg.objects.push_back(hexagon);
+        shapeAdded = true;
     }
     else if (shapeType == "Text")
     {
@@ -60,6 +67,13 @@ inline void Canvas::addShapeToCanvas(const std::string shapeType)
         text->y = 550;
         text->content = "Hello, World!";
         svg.objects.push_back(text);
+        shapeAdded = true;
+    }
+
+    if (shapeAdded)
+    {
+        undoStack.push_back(prevState);
+        redoStack.clear();
     }
 }
 

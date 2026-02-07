@@ -6,15 +6,19 @@ inline void Canvas::setCurrentTool(const QString &toolName)
     currentTool = toolName;
     qDebug() << "Current tool set to:" << currentTool;
 
+    bool edited = false;
+    SVG currentState = svg.clone();
+
     if (currentTool == "Delete")
     {
-        if (selected_shape)
+        if (selected_shape != nullptr)
         {
             auto it = std::find(svg.objects.begin(), svg.objects.end(), selected_shape);
             if (it != svg.objects.end())
             {
                 svg.objects.erase(it);
                 selected_shape = nullptr;
+                edited = true;
             }
         }
         currentTool = "";
@@ -22,7 +26,7 @@ inline void Canvas::setCurrentTool(const QString &toolName)
     }
     if (currentTool == "Text Edit")
     {
-        if (selected_shape && selected_shape->type() == "text")
+        if (selected_shape != nullptr && selected_shape->type() == "text")
         {
             auto text_obj = std::dynamic_pointer_cast<Text>(*std::find(svg.objects.begin(), svg.objects.end(), selected_shape));
             if (text_obj)
@@ -32,6 +36,7 @@ inline void Canvas::setCurrentTool(const QString &toolName)
                 if (ok && !newText.isEmpty())
                 {
                     text_obj->content = newText.toStdString();
+                    edited = true;
                     update();
                 }
             }
@@ -40,13 +45,14 @@ inline void Canvas::setCurrentTool(const QString &toolName)
     }
     else if (currentTool == "Fill Color")
     {
-        if (selected_shape)
+        if (selected_shape != nullptr)
         {
             bool ok;
             QString newColor = QInputDialog::getText(this, "Fill Color", "Enter fill color (e.g. 'red' or '#ff0000'):", QLineEdit::Normal, QString::fromStdString(selected_shape->fill), &ok);
             if (ok && !newColor.isEmpty())
             {
                 selected_shape->fill = newColor.toStdString();
+                edited = true;
                 update();
             }
         }
@@ -54,7 +60,7 @@ inline void Canvas::setCurrentTool(const QString &toolName)
     }
     else if (currentTool == "Stroke")
     {
-        if (selected_shape)
+        if (selected_shape != nullptr)
         {
             bool okWidth;
             int newWidth = QInputDialog::getInt(this, "Stroke Width",
@@ -74,12 +80,18 @@ inline void Canvas::setCurrentTool(const QString &toolName)
                 {
                     selected_shape->stroke_width = newWidth;
                     selected_shape->stroke = newColor.toStdString();
-
+                    edited = true;
                     update();
                 }
             }
         }
         currentTool = "";
+    }
+
+    if (edited)
+    {
+        undoStack.push_back(currentState);
+        redoStack.clear();
     }
 }
 

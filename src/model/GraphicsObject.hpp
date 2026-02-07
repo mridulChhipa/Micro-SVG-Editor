@@ -58,6 +58,8 @@ public:
            << " opacity=\"" << opacity << "\" visibility=\"" << visibility << "\"";
         return ss.str();
     }
+
+    virtual std::shared_ptr<GraphicsObject> clone() const = 0;
 };
 
 using GraphicsObjectPtr = std::shared_ptr<GraphicsObject>;

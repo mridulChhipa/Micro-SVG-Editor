@@ -29,10 +29,13 @@ private:
         return action;
     };
 
-    void setupToolbar()
+    void setupToolbar(QActionGroup *actionGroup = nullptr)
     {
-        QActionGroup *actionGroup = new QActionGroup(this);
-        actionGroup->setExclusive(true);
+        if (!actionGroup)
+        {
+            actionGroup = new QActionGroup(this);
+            actionGroup->setExclusive(true);
+        }
 
         QAction *selectAction = addToolAction("Select", true, actionGroup);
         QAction *moveAction = addToolAction("Move", true, actionGroup);
@@ -59,10 +62,10 @@ private:
     }
 
 public:
-    TopToolBar(const QString &title, QWidget *parent = nullptr) : QToolBar(title, parent)
+    TopToolBar(const QString &title, QWidget *parent = nullptr, QActionGroup *actionGroup = nullptr) : QToolBar(title, parent)
     {
         // Toolbar setup can be done here
-        setupToolbar();
+        setupToolbar(actionGroup);
     }
 private slots:
     void toolSelectionTriggered()

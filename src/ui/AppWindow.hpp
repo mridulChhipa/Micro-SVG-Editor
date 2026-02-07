@@ -30,104 +30,15 @@ class AppWindow : public QMainWindow
 private:
     Canvas *drawingCanvas;
     std::string currentFilePath;
+    QActionGroup *toolActionGroup;
 
 private slots:
-    void openFile()
-    {
-        QString filePath = QFileDialog::getOpenFileName(this, "Open SVG File", QDir::homePath(), "SVG Files (*.svg)");
-        if (!filePath.isEmpty())
-        {
-            qDebug() << "File opened:" << filePath;
-            Reader svgReader = Reader(filePath);
-            Lexer svgLexer = Lexer(svgReader);
-            Parser svgParser = Parser(svgLexer);
-            svgParser.parse();
-            drawingCanvas->updateCanvas(svgParser.getSVG());
-            currentFilePath = filePath.toStdString();
-        }
-    }
-
-    void saveCurrFile()
-    {
-        if (currentFilePath.empty())
-        {
-            QString filePath = QFileDialog::getSaveFileName(this, "Save SVG File", QDir::homePath(), "SVG Files (*.svg)");
-            if (!filePath.isEmpty())
-            {
-                currentFilePath = filePath.toStdString();
-            }
-            else
-            {
-                qDebug() << "Save cancelled.";
-                return;
-            }
-        }
-
-        qDebug() << "Saving to:" << QString::fromStdString(currentFilePath);
-
-        QFile file(QString::fromStdString(currentFilePath));
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-        {
-            QTextStream out(&file);
-            out << QString::fromStdString(drawingCanvas->currentCanvasToSVG());
-            file.close();
-            qDebug() << "File saved successfully.";
-        }
-        else
-        {
-            qDebug() << "Error: Could not open file for writing:" << QString::fromStdString(currentFilePath);
-        }
-    }
-
-    void saveAsFile()
-    {
-        QString filePath = QFileDialog::getSaveFileName(this, "Save SVG File As", QDir::homePath(), "SVG Files (*.svg)");
-
-        if (!filePath.isEmpty())
-        {
-            currentFilePath = filePath.toStdString();
-
-            qDebug() << "Saving to:" << filePath;
-
-            QFile file(filePath);
-            if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-            {
-                QTextStream out(&file);
-                out << QString::fromStdString(drawingCanvas->currentCanvasToSVG());
-                file.close();
-                qDebug() << "File saved successfully.";
-            }
-            else
-            {
-                qDebug() << "Error: Could not open file for writing:" << filePath;
-            }
-        }
-    }
-
-    void openSampleFile(const QString &samplePath = "")
-    {
-        QString filePath = samplePath;
-        if (filePath.isEmpty())
-            filePath = ":testxmls/sample.svg";
-
-        qDebug() << "Opening sample file:" << filePath;
-        Reader svgReader = Reader(filePath);
-        Lexer svgLexer = Lexer(svgReader);
-        Parser svgParser = Parser(svgLexer);
-        svgParser.parse();
-        drawingCanvas->updateCanvas(svgParser.getSVG());
-    }
-
-    void clearCanvas()
-    {
-        drawingCanvas->clearCanvas();
-    }
-
-    void newFile()
-    {
-        drawingCanvas->clearCanvas();
-        currentFilePath.clear();
-    }
+    void openFile();
+    void saveCurrFile();
+    void saveAsFile();
+    void openSampleFile();
+    void clearCanvas();
+    void newFile();
 
     void loadStyleSheet()
     {
@@ -153,6 +64,9 @@ public:
     {
         loadStyleSheet();
 
+        toolActionGroup = new QActionGroup(this);
+        toolActionGroup->setExclusive(true);
+
         QAction *manualReload = new QAction(this);
         manualReload->setShortcut(QKeySequence(Qt::Key_F5));
         connect(manualReload, &QAction::triggered, this, &AppWindow::loadStyleSheet);
@@ -173,19 +87,22 @@ public:
         connect(menuBar, &MenuBar::saveAsRequested, this, &AppWindow::saveAsFile);
         connect(menuBar, &MenuBar::clearRequested, this, &AppWindow::clearCanvas);
         connect(menuBar, &MenuBar::newRequested, this, &AppWindow::newFile);
-        // Toolbars
-        TopToolBar *topToolBar = new TopToolBar("Top Tools", this);
+        
+        connect(menuBar, &MenuBar::undoRequested, drawingCanvas, &Canvas::undo);
+        connect(menuBar, &MenuBar::redoRequested, drawingCanvas, &Canvas::redo);
+
+        TopToolBar *topToolBar = new TopToolBar("Top Tools", this, toolActionGroup);
         topToolBar->setObjectName("TopToolBar");
         addToolBar(Qt::TopToolBarArea, topToolBar);
-
         connect(topToolBar, &TopToolBar::toolSelected, drawingCanvas, &Canvas::setCurrentTool);
 
-        LeftToolBar *leftToolBar = new LeftToolBar("Tools", this);
+        LeftToolBar *leftToolBar = new LeftToolBar("Tools", this, toolActionGroup);
         leftToolBar->setObjectName("LeftToolBar");
         addToolBar(Qt::LeftToolBarArea, leftToolBar);
-
         connect(leftToolBar, &LeftToolBar::toolSelected, drawingCanvas, &Canvas::setCurrentTool);
     }
 };
+
+#include "MenuBarOptions.hpp"
 
 #endif

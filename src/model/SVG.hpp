@@ -37,6 +37,18 @@ public:
     }
 
     void clear() { objects.clear(); }
+
+    SVG clone() const
+    {
+        SVG copy;
+        copy.width = width;
+        copy.height = height;
+        copy.xmlns = xmlns;
+        copy.viewBox = viewBox;
+        for (const auto &obj : objects)
+            copy.objects.push_back(obj->clone()); // Deep copy of shared_ptr
+        return copy;
+    }
 };
 
 #endif

@@ -32,40 +32,6 @@ using ShapeVariant = std::variant<std::shared_ptr<Rect>, std::shared_ptr<Circle>
 class Canvas : public QWidget
 {
     Q_OBJECT
-
-public:
-    explicit Canvas(QWidget *parent = nullptr) : QWidget(parent), dragging(false) {}
-
-    void updateCanvas(const SVG &newSvg)
-    {
-        svg = newSvg;
-        update();
-    }
-
-    std::string currentCanvasToSVG()
-    {
-        return svg.toSVG();
-    }
-
-    void clearCanvas()
-    {
-        svg.clear();
-        update();
-    }
-
-    void setCurrentTool(const QString &toolName);
-protected:
-    void mousePressEvent(QMouseEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void mouseReleaseEvent(QMouseEvent *event) override;
-
-    void paintEvent(QPaintEvent *event) override
-    {
-        QPainter painter(this);
-        painter.fillRect(event->rect(), QColor("#414141"));
-        drawSVG(painter);
-    }
-
 private:
     bool dragging{false};
     bool is_resizing{false};
@@ -73,8 +39,13 @@ private:
     GraphicsObjectPtr selected_shape{nullptr};
     HandleType curr_handle{HandleType::None};
     QRectF start_rect;
-
     QString currentTool;
+    
+    QVector<SVG> undoStack;
+    QVector<SVG> redoStack;
+    QVector<SVG> undoStackTemp;
+    bool isPerformingUndoRedo{false};
+    std::string undoRedoSVG;
 
     const int handle_size = 8;
     const int adjust = 20;
@@ -122,8 +93,46 @@ private:
 
     QRectF renderHandle(const QRectF &obj, HandleType handle_type);
     HandleType hitTestHandles(const QRectF &obj, const QPointF &point);
+
+protected:
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+
+    void paintEvent(QPaintEvent *event) override
+    {
+        QPainter painter(this);
+        painter.fillRect(event->rect(), QColor("#414141"));
+        drawSVG(painter);
+    }
+
+public:
+    explicit Canvas(QWidget *parent = nullptr) : QWidget(parent), dragging(false)
+    {
+        undoStack.clear();
+        redoStack.clear();
+    }
+
+    void updateCanvas(const SVG &newSvg)
+    {
+        svg = newSvg;
+        update();
+    }
+
+    std::string currentCanvasToSVG() { return svg.toSVG(); }
+
+    void clearCanvas()
+    {
+        svg.clear();
+        update();
+    }
+
+    void setCurrentTool(const QString &toolName);
+    void undo();
+    void redo();
 };
 
+#include "./include/StackOperations.hpp"
 #include "./include/MouseEvents.hpp"
 #include "./include/AddShapes.hpp"
 #include "./include/ObjectCreation.hpp"
