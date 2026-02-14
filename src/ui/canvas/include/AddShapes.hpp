@@ -49,7 +49,7 @@ inline void Canvas::addShapeToCanvas(const std::string shapeType, QPointF locati
         hexagon->x = location.x();
         hexagon->y = location.y();
         hexagon->side_length = 50;
-        // Calculate the 6 points of the hexagon
+        
         for (int i = 0; i < 6; i++)
         {
             double angle = M_PI / 3.0 * i;

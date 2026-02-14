@@ -99,10 +99,23 @@ MicroSvgEditor/
 │   ├── ui/
 │   │   ├── canvas/
 │   │   │   ├── include/
+│   │   │   │   ├── handlers/
+│   │   │   │   │   ├── events/
+│   │   │   │   │   │   ├── MouseMoveEvent.hpp
+│   │   │   │   │   │   ├── MousePressEvent.hpp
+│   │   │   │   │   │   ├── MouseReleaseEvent.hpp
+│   │   │   │   │   │   └── PaintEvent.hpp
+│   │   │   │   │   ├── CircleResizeHandler.hpp
+│   │   │   │   │   └── HexagonResizeHandler.hpp
+│   │   │   │   ├── tools/
+│   │   │   │   │   ├── BorderRadiusEdit.hpp
+│   │   │   │   │   ├── CanvasEdit.hpp
+│   │   │   │   │   ├── EditOpacity.hpp
+│   │   │   │   │   ├── StrokeEdit.hpp
+│   │   │   │   │   └── TextEdit.hpp
 │   │   │   │   ├── AddShapes.hpp
 │   │   │   │   ├── BuildPaths.hpp
 │   │   │   │   ├── DragAndResize.hpp
-│   │   │   │   ├── MouseEvents.hpp
 │   │   │   │   ├── ObjectCreation.hpp
 │   │   │   │   ├── Renderer.hpp
 │   │   │   │   ├── RenderHandles.hpp
@@ -115,11 +128,13 @@ MicroSvgEditor/
 │   │   │   ├── line.jpg
 │   │   │   ├── polygon.jpg
 │   │   │   └── rectangle.jpg
+│   │   ├── styles/
+│   │   │   ├── LoadStyleSheet.hpp
+│   │   │   └── style.qss
 │   │   ├── AppWindow.hpp
 │   │   ├── LeftToolBar.hpp
 │   │   ├── MenuBar.hpp
 │   │   ├── MenuBarOptions.hpp
-│   │   ├── style.qss
 │   │   └── TopToolBar.hpp
 │   └── CMakeLists.txt
 ├── CMakeLists.txt

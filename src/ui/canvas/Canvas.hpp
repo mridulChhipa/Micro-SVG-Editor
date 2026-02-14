@@ -37,10 +37,8 @@ private:
     bool dragging{false};
     bool is_resizing{false};
     QPoint last_point;
-    GraphicsObjectPtr selected_shape{nullptr};
     HandleType curr_handle{HandleType::None};
     QRectF start_rect;
-    QString currentTool;
 
     QVector<SVG> undoStack;
     QVector<SVG> redoStack;
@@ -55,8 +53,6 @@ private:
 
     const int handle_size = 8;
     const int adjust = 20;
-
-    SVG svg;
 
     std::optional<ShapeVariant> toShapeVariant(const GraphicsObjectPtr &obj)
     {
@@ -116,75 +112,28 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
 
-    void paintEvent(QPaintEvent *event) override
-    {
-        QPainter painter(this);
-        painter.setRenderHint(QPainter::Antialiasing); // Makes lines smooth
-        painter.fillRect(event->rect(), Qt::darkGray); // Canvas edge empty space fill
-
-        float x_offset = (width() - svg.width) / 2.0f;
-        float y_offset = (height() - svg.height) / 2.0f;
-
-        painter.translate(x_offset, y_offset);
-        QRectF drawing_area(0, 0, svg.width, svg.height);
-        painter.setBrush(QColor(50, 50, 50));
-        painter.setPen(Qt::NoPen);
-        painter.drawRect(drawing_area);
-
-        painter.setClipRect(drawing_area);
-
-        drawSVG(painter);
-
-        if (!current_path.isEmpty())
-        {
-            QPen pen(Qt::black, 2);          // Color black, width 2
-            pen.setJoinStyle(Qt::RoundJoin); // Smooth corners
-            pen.setCapStyle(Qt::RoundCap);   // Smooth ends
-            painter.setPen(pen);
-
-            painter.drawPath(current_path);
-        }
-    }
+    void paintEvent(QPaintEvent *event) override;
 
 public:
-    explicit Canvas(QWidget *parent = nullptr) : QWidget(parent), dragging(false)
-    {
-        undoStack.clear();
-        redoStack.clear();
-    }
+    GraphicsObjectPtr selected_shape{nullptr};
+    QString currentTool{""};
+    SVG svg;
 
-    void updateCanvas(const SVG &newSvg)
-    {
-        svg = newSvg;
-        // std::cout << svg.toSVG() << std::endl;
-        update();
-    }
-
-    void updateCanvasSize(int w, int h) {
-        svg.width = w;
-        svg.height = h;
-        update();
-    }
-
+    explicit Canvas(QWidget *parent = nullptr) : QWidget(parent), dragging(false) { undoStack.clear(); redoStack.clear(); }
+    void updateCanvas(const SVG &newSvg) { svg = newSvg; update(); }
+    void updateCanvasSize(int w, int h) { svg.width = w; svg.height = h; update(); }
     std::string currentCanvasToSVG() { return svg.toSVG(); }
-
-    void clearCanvas()
-    {
-        svg.clear();
-        update();
-    }
-
+    void clearCanvas() { svg.clear(); update(); }
     void setCurrentTool(const QString &toolName);
     void undo();
     void redo();
-    
+
     void cut();
     void copy();
     void paste();
 };
 
 #include "./include/StackOperations.hpp"
-#include "./include/MouseEvents.hpp"
 #include "./include/AddShapes.hpp"
 #include "./include/ObjectCreation.hpp"
 #include "./include/Renderer.hpp"
@@ -192,5 +141,9 @@ public:
 #include "./include/BuildPaths.hpp"
 #include "./include/RenderHandles.hpp"
 #include "./include/Tools.hpp"
+#include "./include/handlers/events/PaintEvent.hpp"
+#include "./include/handlers/events/MousePressEvent.hpp"
+#include "./include/handlers/events/MouseMoveEvent.hpp"
+#include "./include/handlers/events/MouseReleaseEvent.hpp"
 
 #endif

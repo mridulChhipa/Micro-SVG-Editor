@@ -14,16 +14,8 @@ inline void Canvas::createBrush(const GraphicsObjectPtr &obj, QPainter &painter)
         return;
     }
 
-    if (obj->fill != "none" && obj->fill != "polyline")
-    {
-        QColor fillCol(QString::fromStdString(obj->fill));
-        fillCol.setAlphaF(obj->fill_opacity);
-        painter.setBrush(QBrush(fillCol));
-    }
-    else
-    {
-        painter.setBrush(Qt::NoBrush);
-    }
+    if (obj->fill != "none" && obj->fill != "polyline") { QColor fillCol(QString::fromStdString(obj->fill)); fillCol.setAlphaF(obj->fill_opacity); painter.setBrush(QBrush(fillCol)); }
+    else         painter.setBrush(Qt::NoBrush);
 
     QPen currentPen = painter.pen();
     QColor strokeCol = currentPen.color();
@@ -37,16 +29,7 @@ inline void Canvas::createBrush(const GraphicsObjectPtr &obj, QPainter &painter)
                                                               : Qt::MiterJoin);
     painter.setPen(currentPen);
 
-    if (obj->type() == "text")
-    {
-        auto textObj = std::dynamic_pointer_cast<Text>(obj);
-        if (textObj)
-        {
-            QFont font(QString::fromStdString(textObj->font_family));
-            font.setPointSizeF(textObj->font_size);
-            painter.setFont(font);
-        }
-    }
+    if (obj->type() == "text") { auto textObj = std::dynamic_pointer_cast<Text>(obj);if (textObj) { QFont font(QString::fromStdString(textObj->font_family)); font.setPointSizeF(textObj->font_size); painter.setFont(font); }}
 }
 
 inline void Canvas::drawSVG(QPainter &painter)
@@ -62,16 +45,8 @@ inline void Canvas::drawSVG(QPainter &painter)
         createBrush(obj, painter);
 
         QTransform transform = findTransform(obj);
-        if (!transform.isIdentity())
-        {
-            painter.setTransform(transform, true);
-            painter.drawPath(path);
-            painter.setTransform(QTransform());
-        }
-        else
-        {
-            painter.drawPath(path);
-        }
+        if (!transform.isIdentity()) { painter.setTransform(transform, true); painter.drawPath(path); painter.setTransform(QTransform()); }
+        else painter.drawPath(path);
 
         if (obj == selected_shape)
         {
@@ -88,11 +63,7 @@ inline void Canvas::drawSVG(QPainter &painter)
 
             painter.setPen(Qt::blue);
             painter.setBrush(Qt::white);
-            for (int i = 0; i < 8; ++i)
-            {
-                QRectF handleRect = renderHandle(selRect, static_cast<HandleType>(i));
-                painter.drawRect(handleRect);
-            }
+            for (int i = 0; i < 8; ++i) { QRectF handleRect = renderHandle(selRect, static_cast<HandleType>(i)); painter.drawRect(handleRect); }
             painter.restore();
         }
     }
