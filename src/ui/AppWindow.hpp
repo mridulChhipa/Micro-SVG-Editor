@@ -11,9 +11,12 @@
 #include <QDebug>
 #include <QFileSystemWatcher>
 #include <QApplication>
-#include <QDir>      // Added for path debugging
-#include <QFileInfo> // Added for path debugging
+#include <QDir>      
+#include <QFileInfo>
 #include <QFileDialog>
+
+#include <QScreen>
+#include <QGuiApplication>
 
 #include "./canvas/Canvas.hpp"
 #include "MenuBar.hpp"
@@ -42,7 +45,7 @@ private slots:
 
     void loadStyleSheet()
     {
-        QFile file(":ui/style.qss");
+        QFile file(":ui/styles/style.qss");
 
         qDebug() << "Attempting reload from:" << QFileInfo(file).absoluteFilePath();
 
@@ -94,6 +97,8 @@ public:
         connect(menuBar, &MenuBar::cutRequested, drawingCanvas, &Canvas::cut);
         connect(menuBar, &MenuBar::copyRequested, drawingCanvas, &Canvas::copy);
         connect(menuBar, &MenuBar::pasteRequested, drawingCanvas, &Canvas::paste);
+
+        connect(menuBar, &MenuBar::exitRequested, this, &QWidget::close);
 
         TopToolBar *topToolBar = new TopToolBar("Top Tools", this, toolActionGroup);
         topToolBar->setObjectName("TopToolBar");

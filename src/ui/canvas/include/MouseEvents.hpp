@@ -9,7 +9,7 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
     if (currentTool != "" && currentTool != "Freehand")
     {
         std::cout << "Adding shape: " << currentTool.toStdString() << std::endl;
-        addShapeToCanvas(currentTool.toStdString());
+        addShapeToCanvas(currentTool.toStdString(), toCanvasCoordinates(event->pos()));
         update();
     }
 
@@ -182,7 +182,7 @@ inline void Canvas::mouseReleaseEvent(QMouseEvent *event)
                 }
             }
         }
-    
+
         svg.objects.push_back(newPath);
         current_path = QPainterPath();
         undoStack.push_back(prevSVG);

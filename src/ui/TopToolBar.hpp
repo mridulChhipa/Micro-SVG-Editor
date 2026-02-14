@@ -38,18 +38,23 @@ private:
         }
 
         QAction *selectAction = addToolAction("Select", true, actionGroup);
-        QAction *rectangleAction = addToolAction("Rectangle", true, actionGroup, ":ui/icons/rectangle.jpg", "Rectangle");
-        QAction *circleAction = addToolAction("Circle", true, actionGroup, ":ui/icons/circle.jpg", "Circle");
-        QAction *lineAction = addToolAction("Line", true, actionGroup, ":ui/icons/line.jpg", "Line");
 
         QAction *fillColorAction = addToolAction("Fill Color", false, actionGroup);
         QAction *strokeAction = addToolAction("Stroke", false, actionGroup);
+        QAction *fillOpacity = addToolAction("Fill Opacity", false, actionGroup);
+        QAction *strokeOpacity = addToolAction("Stroke Opacity", false, actionGroup);
+        QAction *opacityAction = addToolAction("Opacity", false, actionGroup);
+
         QAction *textEditAction = addToolAction("Text Edit", false, actionGroup);
+        QAction *borderRadiusAction = addToolAction("Border Radius", false, actionGroup);
+        QAction *rotateAction = addToolAction("Transform", false, actionGroup);
+
+        QAction *canvasDimensionsAction = addToolAction("Canvas Dimensions", false, actionGroup);
+
+        connect(borderRadiusAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
+        connect(canvasDimensionsAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
 
         connect(selectAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
-        connect(rectangleAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
-        connect(circleAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
-        connect(lineAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
 
         connect(fillColorAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
         connect(strokeAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
@@ -57,6 +62,11 @@ private:
 
         QAction *deleteAction = addToolAction("Delete", false, actionGroup);
         connect(deleteAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
+
+        connect(fillOpacity, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
+        connect(rotateAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
+        connect(strokeOpacity, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
+        connect(opacityAction, &QAction::triggered, this, &TopToolBar::toolSelectionTriggered);
     }
 
 public:

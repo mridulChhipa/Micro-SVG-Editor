@@ -4,7 +4,7 @@
     <file>ui/icons/circle.jpg</file>
     <file>ui/icons/line.jpg</file>
     <file>ui/icons/polygon.jpg</file>
-    <file>ui/style.qss</file>
+    <file>ui/styles/style.qss</file>
     <file>testxmls/sample.svg</file>
 </qresource>
 </RCC>

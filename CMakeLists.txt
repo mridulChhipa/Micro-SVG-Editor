@@ -9,18 +9,50 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-option(MICRO_SVG_EDITOR_ENABLE_WARNINGS "Enable strict compiler warnings" ON)
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
 set(QT_REQUIRED_COMPONENTS Widgets)
-find_package(Qt6 COMPONENTS ${QT_REQUIRED_COMPONENTS})
-if(Qt6_FOUND)
-  set(QT_VERSION_MAJOR 6)
-else()
-  find_package(Qt5 COMPONENTS ${QT_REQUIRED_COMPONENTS} REQUIRED)
-  set(QT_VERSION_MAJOR 5)
-endif()
-set(QT_VERSION_MAJOR ${QT_VERSION_MAJOR} CACHE INTERNAL "Detected Qt major version" FORCE)
+find_package(Qt6 COMPONENTS ${QT_REQUIRED_COMPONENTS} QUIET)
 
-add_subdirectory(src)
+if(Qt6_FOUND)
+    set(QT_VERSION_MAJOR 6)
+else()
+    find_package(Qt5 COMPONENTS ${QT_REQUIRED_COMPONENTS} REQUIRED)
+    set(QT_VERSION_MAJOR 5)
+endif()
+
+message(STATUS "MicroSvgEditor: Using Qt Major Version: ${QT_VERSION_MAJOR}")
+
+set(SRC_SOURCES
+    src/app/main.cpp
+    src/resources.qrc
+)
+
+set(SRC_HEADERS
+    src/ui/AppWindow.hpp
+    src/ui/canvas/Canvas.hpp
+    src/ui/canvas/HandleType.hpp
+    src/ui/MenuBar.hpp
+    src/ui/TopToolBar.hpp
+    src/ui/LeftToolBar.hpp
+)
+
+add_executable(MicroSvgEditor
+    ${SRC_SOURCES}
+    ${SRC_HEADERS}
+)
+
+target_include_directories(MicroSvgEditor
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/ui
+)
+
+target_link_libraries(MicroSvgEditor
+    PRIVATE
+        Qt${QT_VERSION_MAJOR}::Widgets
+)
+
+if(MSVC)
+    target_compile_options(MicroSvgEditor PRIVATE /W4 /permissive- /EHsc)
+else()
+    target_compile_options(MicroSvgEditor PRIVATE -Wall -Wextra -Wpedantic)
+endif()

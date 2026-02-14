@@ -92,6 +92,12 @@ inline void AppWindow::clearCanvas()
 
 inline void AppWindow::newFile()
 {
+    QScreen *screen = QGuiApplication::primaryScreen();
+    QRect screenGeometry = screen->geometry();
+
+    int width = screenGeometry.width();
+    int height = screenGeometry.height();
+    drawingCanvas->updateCanvasSize(width / 2, height / 2);
     drawingCanvas->clearCanvas();
     currentFilePath.clear();
 }

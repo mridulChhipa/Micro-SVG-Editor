@@ -1,15 +1,15 @@
 #ifndef ADD_SHAPES_HPP
 #define ADD_SHAPES_HPP
 
-inline void Canvas::addShapeToCanvas(const std::string shapeType)
+inline void Canvas::addShapeToCanvas(const std::string shapeType, QPointF location)
 {
     bool shapeAdded = false;
     SVG prevState = svg; // Save current state for undo
     if (shapeType == "Rectangle")
     {
         auto rect = std::make_shared<Rect>();
-        rect->x = 50;
-        rect->y = 50;
+        rect->x = location.x();
+        rect->y = location.y();
         rect->width = 100;
         rect->height = 100;
         svg.objects.push_back(rect);
@@ -18,8 +18,8 @@ inline void Canvas::addShapeToCanvas(const std::string shapeType)
     else if (shapeType == "Circle")
     {
         auto circle = std::make_shared<Circle>();
-        circle->x = 150;
-        circle->y = 150;
+        circle->x = location.x();
+        circle->y = location.y();
         circle->r = 50;
         svg.objects.push_back(circle);
         shapeAdded = true;
@@ -27,10 +27,10 @@ inline void Canvas::addShapeToCanvas(const std::string shapeType)
     else if (shapeType == "Line")
     {
         auto line = std::make_shared<Line>();
-        line->x1 = 500;
-        line->y1 = 200;
-        line->x2 = 300;
-        line->y2 = 300;
+        line->x1 = location.x();
+        line->y1 = location.y();
+        line->x2 = line->x1 + 100;
+        line->y2 = line->y1 + 100;
         line->stroke = "blue";
         line->stroke_width = 5.0f;
         svg.objects.push_back(line);
@@ -46,8 +46,8 @@ inline void Canvas::addShapeToCanvas(const std::string shapeType)
     else if (shapeType == "Hexagon")
     {
         auto hexagon = std::make_shared<Hexagon>();
-        hexagon->x = 500;
-        hexagon->y = 500;
+        hexagon->x = location.x();
+        hexagon->y = location.y();
         hexagon->side_length = 50;
         // Calculate the 6 points of the hexagon
         for (int i = 0; i < 6; i++)
@@ -63,8 +63,8 @@ inline void Canvas::addShapeToCanvas(const std::string shapeType)
     else if (shapeType == "Text")
     {
         auto text = std::make_shared<Text>();
-        text->x = 550;
-        text->y = 550;
+        text->x = location.x();
+        text->y = location.y();
         text->content = "Hello, World!";
         svg.objects.push_back(text);
         shapeAdded = true;

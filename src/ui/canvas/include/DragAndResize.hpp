@@ -162,16 +162,6 @@ inline void Canvas::applyResize(const QPoint &delta, HandleType handle)
                     x += centerDx;
                     y += centerDy;
                 }
-            }else if constexpr (std::is_same_v<T, std::shared_ptr<Text>>)
-            {
-                if (affectsLeft)  s->x += dx;
-                if (affectsTop)   s->y += dy;
-                int sizeDelta = 0;
-                if (affectsRight)       sizeDelta += dx;
-                else if (affectsLeft)   sizeDelta -= dx;
-                if (affectsBottom)      sizeDelta += dy;
-                else if (affectsTop)    sizeDelta -= dy;
-                s->font_size = std::max(1.0, s->font_size + sizeDelta / 10.0);
             } }, *shape);
 }
 

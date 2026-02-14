@@ -1,4 +1,3 @@
-// Menu Bar Setup
 #ifndef MENU_BAR_SETUP_HPP
 #define MENU_BAR_SETUP_HPP
 
@@ -31,13 +30,14 @@ public:
         QAction *saveAsAction = fileMenu->addAction("Save As");
         fileMenu->addSeparator();
         QAction *clearAction = fileMenu->addAction("Clear Canvas");
-        fileMenu->addAction("Exit", this, &QWidget::close);
+        QAction *exitAction = fileMenu->addAction("Exit");
 
         connect(openAction, &QAction::triggered, this, &MenuBar::openRequested);
         connect(saveAction, &QAction::triggered, this, &MenuBar::saveRequested);
         connect(saveAsAction, &QAction::triggered, this, &MenuBar::saveAsRequested);
         connect(clearAction, &QAction::triggered, this, &MenuBar::clearRequested);
         connect(newAction, &QAction::triggered, this, &MenuBar::newRequested);
+        connect(exitAction, &QAction::triggered, this, &MenuBar::exitRequested);
 
         // Edit Menu
         QMenu *editMenu = this->addMenu("Edit");
@@ -78,5 +78,7 @@ signals:
     void cutRequested();
     void copyRequested();
     void pasteRequested();
+
+    void exitRequested();
 };
 #endif

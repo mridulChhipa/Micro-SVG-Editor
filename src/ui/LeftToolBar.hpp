@@ -38,17 +38,20 @@ private:
             actionGroup->setExclusive(true);
         }
 
+        QAction *rectangleAction = addToolAction("Rectangle", true, actionGroup, ":ui/icons/rectangle.jpg", "Rectangle");
+        QAction *circleAction = addToolAction("Circle", true, actionGroup, ":ui/icons/circle.jpg", "Circle");
+        QAction *lineAction = addToolAction("Line", true, actionGroup, ":ui/icons/line.jpg", "Line");
         QAction *hexagonAction = addToolAction("Hexagon", true, actionGroup, ":ui/icons/polygon.jpg", "Hexagon");
         QAction *freehandAction = addToolAction("Freehand", true, actionGroup);
         QAction *textAction = addToolAction("Text", true, actionGroup);
-        QAction *borderRadiusAction = addToolAction("Border Radius", false, actionGroup);
-        QAction *canvasDimensionsAction = addToolAction("Canvas Dimensions", false, actionGroup);
 
+        connect(rectangleAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
+        connect(circleAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
+        connect(lineAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
         connect(hexagonAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
         connect(freehandAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
         connect(textAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
-        connect(borderRadiusAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
-        connect(canvasDimensionsAction, &QAction::triggered, this, &LeftToolBar::toolSelectionTriggered);
+
     }
 
 public:

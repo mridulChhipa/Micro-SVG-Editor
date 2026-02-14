@@ -98,7 +98,7 @@ private:
     void buildShapePath(QPainterPath &path, const std::shared_ptr<Hexagon> &s);
     void buildShapePath(QPainterPath &path, const std::shared_ptr<Text> &s);
 
-    void addShapeToCanvas(const std::string);
+    void addShapeToCanvas(const std::string, QPointF location);
     QPointF toCanvasCoordinates(QPointF point)
     {
         float x_offset = (width() - svg.width) / 2.0f;
@@ -157,6 +157,12 @@ public:
     {
         svg = newSvg;
         // std::cout << svg.toSVG() << std::endl;
+        update();
+    }
+
+    void updateCanvasSize(int w, int h) {
+        svg.width = w;
+        svg.height = h;
         update();
     }
 
