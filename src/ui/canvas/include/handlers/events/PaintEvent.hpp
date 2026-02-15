@@ -7,10 +7,9 @@ inline void Canvas::paintEvent(QPaintEvent *event)
     painter.setRenderHint(QPainter::Antialiasing); // Makes lines smooth
     painter.fillRect(event->rect(), Qt::darkGray); // Canvas edge empty space fill
 
-    float x_offset = (width() - svg.width) / 2.0f;
-    float y_offset = (height() - svg.height) / 2.0f;
-
+    painter.scale(zoom_factor, zoom_factor);
     painter.translate(x_offset, y_offset);
+
     QRectF drawing_area(0, 0, svg.width, svg.height);
     painter.setBrush(QColor(50, 50, 50));
     painter.setPen(Qt::NoPen);

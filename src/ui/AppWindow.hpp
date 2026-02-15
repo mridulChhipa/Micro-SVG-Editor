@@ -11,7 +11,7 @@
 #include <QDebug>
 #include <QFileSystemWatcher>
 #include <QApplication>
-#include <QDir>      
+#include <QDir>
 #include <QFileInfo>
 #include <QFileDialog>
 
@@ -44,6 +44,7 @@ private slots:
     void newFile();
 
     void loadStyleSheet();
+
 public:
     AppWindow()
     {
@@ -58,8 +59,8 @@ public:
         this->addAction(manualReload);
 
         setWindowTitle("Micro Svg Editor");
-        resize(1280, 720);
 
+        resize(1280, 720);
         drawingCanvas = new Canvas(this);
         setCentralWidget(drawingCanvas);
         openSampleFile();
@@ -71,7 +72,7 @@ public:
         connect(menuBar, &MenuBar::saveAsRequested, this, &AppWindow::saveAsFile);
         connect(menuBar, &MenuBar::clearRequested, this, &AppWindow::clearCanvas);
         connect(menuBar, &MenuBar::newRequested, this, &AppWindow::newFile);
-        
+
         connect(menuBar, &MenuBar::undoRequested, drawingCanvas, &Canvas::undo);
         connect(menuBar, &MenuBar::redoRequested, drawingCanvas, &Canvas::redo);
 

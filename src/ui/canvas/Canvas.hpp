@@ -53,6 +53,7 @@ private:
 
     const int handle_size = 8;
     const int adjust = 20;
+    double zoom_factor = 1;
 
     std::optional<ShapeVariant> toShapeVariant(const GraphicsObjectPtr &obj)
     {
@@ -97,10 +98,8 @@ private:
     void addShapeToCanvas(const std::string, QPointF location);
     QPointF toCanvasCoordinates(QPointF point)
     {
-        float x_offset = (width() - svg.width) / 2.0f;
-        float y_offset = (height() - svg.height) / 2.0f;
-        point.setX(point.x() - x_offset);
-        point.setY(point.y() - y_offset);
+        point.setX(point.x() / zoom_factor - x_offset);
+        point.setY(point.y() / zoom_factor - y_offset);
         return point;
     }
 
@@ -111,6 +110,8 @@ protected:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
 
     void paintEvent(QPaintEvent *event) override;
 
@@ -119,11 +120,37 @@ public:
     QString currentTool{""};
     SVG svg;
 
-    explicit Canvas(QWidget *parent = nullptr) : QWidget(parent), dragging(false) { undoStack.clear(); redoStack.clear(); }
-    void updateCanvas(const SVG &newSvg) { svg = newSvg; update(); }
-    void updateCanvasSize(int w, int h) { svg.width = w; svg.height = h; update(); }
+    float x_offset{0};
+    float y_offset{0};
+
+    explicit Canvas(QWidget *parent = nullptr) : QWidget(parent), dragging(false)
+    {
+        undoStack.clear();
+        redoStack.clear();
+    }
+    void updateCanvas(const SVG &newSvg)
+    {
+        svg = newSvg;
+        std::cout << width() << " " << height() << '\n';
+
+        x_offset = (width() - svg.width) / 2.0f;
+        y_offset = (height() - svg.height) / 2.0f;
+        zoom_factor = 1.0;
+        
+        update();
+    }
+    void updateCanvasSize(int w, int h)
+    {
+        svg.width = w;
+        svg.height = h;
+        update();
+    }
     std::string currentCanvasToSVG() { return svg.toSVG(); }
-    void clearCanvas() { svg.clear(); update(); }
+    void clearCanvas()
+    {
+        svg.clear();
+        update();
+    }
     void setCurrentTool(const QString &toolName);
     void undo();
     void redo();
@@ -145,5 +172,6 @@ public:
 #include "./include/handlers/events/MousePressEvent.hpp"
 #include "./include/handlers/events/MouseMoveEvent.hpp"
 #include "./include/handlers/events/MouseReleaseEvent.hpp"
+#include "./include/handlers/events/WheelEvent.hpp"
 
 #endif

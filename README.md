@@ -41,7 +41,7 @@ Run the following commands to
     If it shows llvmpipe then acceleration is not working and some fixes are required
     ...
     
-- **Note** When you will install libgl and mesa, then version 25.2.8 of mesa does not support gpu-acceleration due to which you may need to downgrade to version 24 of mesa. The following command will help you for the corresponding task `
+- **Note** When you will install libgl and mesa, then version 25.2.8 does not support gpu-acceleration due to which you may need to downgrade to version 24 of mesa. The following command will help you for the corresponding task `
 sudo apt-get install --allow-downgrades libgl1-mesa-dri=24.0.5-1ubuntu1 libglx-mesa0=24.0.5-1ubuntu1 libglapi-mesa=24.0.5-1ubuntu1 libegl-mesa0=24.0.5-1ubuntu1 libgbm1=24.0.5-1ubuntu1
 `
 
@@ -63,10 +63,16 @@ This assignment had a strong emphasis on ownership and scoping of variables. One
 - The componets were made movable and resizable. The text size feature was not provided specifically instead, the resize operation would let you to change the text size.
 - To prevent not defining objects again and again, std::variant was used so that editing objects becomes easy because the variant directly returns the variant of pointer of that specific type. This was done because many attributes such as x, y, r, points, etc. were used as shape specific attributes which would require to define object pointers again and again.
 
+## Problems faces and solutions
+- As and when I had started to split my program into components, the exit button stopped working and created a bug that just closed the menubar. So that happened because exit() on `this` closes this and when I had split it was refering to the menubar. So I had created an exit signal that call exit for the application through the canvas going upto appwindow.
+
 ## Current Bugs
 - The select option works properly but without selecting the select option you won't be able to select just by clicking, you would need to drag it a bit.
 - Currently handling transforms it a bit difficult specially in cases of translate.
 - The handles of lines are also not properly created as of now;
+
+## Usage
+- Scroll Wheel works as zoom
 
 ## File Organization
 ```
