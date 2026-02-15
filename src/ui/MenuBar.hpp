@@ -8,77 +8,77 @@
 
 class MenuBar : public QMenuBar
 {
-    Q_OBJECT
+  Q_OBJECT
 public:
-    MenuBar(QWidget *parent = nullptr) : QMenuBar(parent)
-    {
-        setupMenus();
-    }
+  MenuBar(QWidget *parent = nullptr) : QMenuBar(parent)
+  {
+    setupMenus();
+  }
 
-    void setupMenus()
-    {
-        QFont font("Segoe UI", 10);
-        font.setStyleStrategy(QFont::PreferAntialias);
-        this->setFont(font);
-        this->setNativeMenuBar(false);
+  void setupMenus()
+  {
+    QFont font("Segoe UI", 10);
+    font.setStyleStrategy(QFont::PreferAntialias);
+    this->setFont(font);
+    this->setNativeMenuBar(false);
 
-        QMenu *fileMenu = this->addMenu("File");
-        QAction *newAction = fileMenu->addAction("New");
-        QAction *openAction = fileMenu->addAction("Open");
-        fileMenu->addSeparator();
-        QAction *saveAction = fileMenu->addAction("Save");
-        QAction *saveAsAction = fileMenu->addAction("Save As");
-        fileMenu->addSeparator();
-        QAction *clearAction = fileMenu->addAction("Clear Canvas");
-        QAction *exitAction = fileMenu->addAction("Exit");
+    QMenu *file_menu = this->addMenu("File");
+    QAction *new_action = file_menu->addAction("New");
+    QAction *open_action = file_menu->addAction("Open");
+    file_menu->addSeparator();
+    QAction *save_action = file_menu->addAction("Save");
+    QAction *save_asAction = file_menu->addAction("Save As");
+    file_menu->addSeparator();
+    QAction *clear_action = file_menu->addAction("Clear Canvas");
+    QAction *exit_action = file_menu->addAction("Exit");
 
-        connect(openAction, &QAction::triggered, this, &MenuBar::openRequested);
-        connect(saveAction, &QAction::triggered, this, &MenuBar::saveRequested);
-        connect(saveAsAction, &QAction::triggered, this, &MenuBar::saveAsRequested);
-        connect(clearAction, &QAction::triggered, this, &MenuBar::clearRequested);
-        connect(newAction, &QAction::triggered, this, &MenuBar::newRequested);
-        connect(exitAction, &QAction::triggered, this, &MenuBar::exitRequested);
+    connect(open_action, &QAction::triggered, this, &MenuBar::openRequested);
+    connect(save_action, &QAction::triggered, this, &MenuBar::saveRequested);
+    connect(save_asAction, &QAction::triggered, this, &MenuBar::saveAsRequested);
+    connect(clear_action, &QAction::triggered, this, &MenuBar::clearRequested);
+    connect(new_action, &QAction::triggered, this, &MenuBar::newRequested);
+    connect(exit_action, &QAction::triggered, this, &MenuBar::exitRequested);
 
-        // Edit Menu
-        QMenu *editMenu = this->addMenu("Edit");
-        QAction *undoAction = editMenu->addAction("Undo");
-        QAction *redoAction = editMenu->addAction("Redo");
-        editMenu->addSeparator();
-        QAction *cutAction = editMenu->addAction("Cut");
-        QAction *copyAction = editMenu->addAction("Copy");
-        QAction *pasteAction = editMenu->addAction("Paste");
+    // Edit Menu
+    QMenu *edit_menu = this->addMenu("Edit");
+    QAction *undo_action = edit_menu->addAction("Undo");
+    QAction *redo_action = edit_menu->addAction("Redo");
+    edit_menu->addSeparator();
+    QAction *cut_action = edit_menu->addAction("Cut");
+    QAction *copy_action = edit_menu->addAction("Copy");
+    QAction *paste_action = edit_menu->addAction("Paste");
 
-        connect(undoAction, &QAction::triggered, this, &MenuBar::undoRequested);
-        connect(redoAction, &QAction::triggered, this, &MenuBar::redoRequested);
-        connect(cutAction, &QAction::triggered, this, &MenuBar::cutRequested);
-        connect(copyAction, &QAction::triggered, this, &MenuBar::copyRequested);
-        connect(pasteAction, &QAction::triggered, this, &MenuBar::pasteRequested);
+    connect(undo_action, &QAction::triggered, this, &MenuBar::undoRequested);
+    connect(redo_action, &QAction::triggered, this, &MenuBar::redoRequested);
+    connect(cut_action, &QAction::triggered, this, &MenuBar::cutRequested);
+    connect(copy_action, &QAction::triggered, this, &MenuBar::copyRequested);
+    connect(paste_action, &QAction::triggered, this, &MenuBar::pasteRequested);
 
-        // View Menu
-        QMenu *viewMenu = this->addMenu("View");
-        viewMenu->addAction("Zoom In");
-        viewMenu->addAction("Zoom Out");
-        viewMenu->addSeparator();
-        viewMenu->addAction("Reset Zoom");
-        viewMenu->addAction("Fullscreen");
-        viewMenu->addSeparator();
-        viewMenu->addAction("Toggle Code / Design View");
-    }
+    // View Menu
+    QMenu *view_menu = this->addMenu("View");
+    view_menu->addAction("Zoom In");
+    view_menu->addAction("Zoom Out");
+    view_menu->addSeparator();
+    view_menu->addAction("Reset Zoom");
+    view_menu->addAction("Fullscreen");
+    view_menu->addSeparator();
+    view_menu->addAction("Toggle Code / Design View");
+  }
 
 signals:
-    void openRequested();
-    void saveRequested();
-    void saveAsRequested();
-    void clearRequested();
-    void newRequested();
-    
-    void undoRequested();
-    void redoRequested();
+  void openRequested();
+  void saveRequested();
+  void saveAsRequested();
+  void clearRequested();
+  void newRequested();
 
-    void cutRequested();
-    void copyRequested();
-    void pasteRequested();
+  void undoRequested();
+  void redoRequested();
 
-    void exitRequested();
+  void cutRequested();
+  void copyRequested();
+  void pasteRequested();
+
+  void exitRequested();
 };
 #endif

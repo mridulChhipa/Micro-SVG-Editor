@@ -3,64 +3,58 @@
 
 inline Token Lexer::scanComment()
 {
-    if (rd.eof() || cur() != '-')
-        return make(TokenType::INVALID, "<!");
-    adv();
-    if (rd.eof() || cur() != '-')
-        return make(TokenType::INVALID, "<!-");
-    adv();
+  if (rd.eof() || cur() != '-')
+    return make(TokenType::INVALID, "<!");
+  adv();
+  if (rd.eof() || cur() != '-')
+    return make(TokenType::INVALID, "<!-");
+  adv();
 
-    std::string s;
-    while (!rd.eof())
+  std::string s;
+  while (!rd.eof())
+  {
+    if (cur() == '-')
     {
-        if (cur() == '-')
+      adv();
+      if (!rd.eof() && cur() == '-')
+      {
+        adv();
+        if (!rd.eof() && cur() == '>')
         {
-            adv();
-            if (!rd.eof() && cur() == '-')
-            {
-                adv();
-                if (!rd.eof() && cur() == '>')
-                {
-                    adv();
-                    break;
-                }
-                s += "--";
-            }
-            else
-            {
-                s += '-';
-            }
+          adv();
+          break;
         }
-        else
-        {
-            s += adv();
-        }
+        s += "--";
+      }
+      else
+        s += '-';
     }
-    return make(TokenType::COMMENT, s);
+    else
+      s += adv();
+  }
+  return make(TokenType::COMMENT, s);
 }
 
-inline Token Lexer::scanXmlDecl()
+inline Token Lexer::scanXml()
 {
-    std::string s;
+  std::string s;
 
-    while (!rd.eof())
+  while (!rd.eof())
+  {
+    if (cur() == '?')
     {
-        if (cur() == '?')
-        {
-            adv();
-            if (!rd.eof() && cur() == '>')
-            {
-                adv();
-                break;
-            }
-            s += '?';
-        }
-        else
-        {
-            s += adv();
-        }
+      adv();
+      if (!rd.eof() && cur() == '>')
+      {
+        adv();
+        break;
+      }
+      s += '?';
     }
-    return make(TokenType::XML_DECL, s);
+    else
+      s += adv();
+  }
+  return make(TokenType::XML_DECL, s);
 }
 
 #endif

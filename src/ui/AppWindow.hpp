@@ -29,71 +29,66 @@
 
 class AppWindow : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 private:
-    Canvas *drawingCanvas;
-    std::string currentFilePath;
-    QActionGroup *toolActionGroup;
+  Canvas *canvas;
+  std::string curr_file_path;
+  QActionGroup *tool_action_group;
 
 private slots:
-    void openFile();
-    void saveCurrFile();
-    void saveAsFile();
-    void openSampleFile();
-    void clearCanvas();
-    void newFile();
+  void openFile();
+  void saveCurrFile();
+  void saveAsFile();
+  void openSampleFile();
+  void clearCanvas();
+  void newFile();
 
-    void loadStyleSheet();
+  void loadStyleSheet();
 
 public:
-    AppWindow()
-    {
-        loadStyleSheet();
+  AppWindow()
+  {
+    loadStyleSheet();
 
-        toolActionGroup = new QActionGroup(this);
-        toolActionGroup->setExclusive(true);
+    tool_action_group = new QActionGroup(this);
+    tool_action_group->setExclusive(true);
 
-        QAction *manualReload = new QAction(this);
-        manualReload->setShortcut(QKeySequence(Qt::Key_F5));
-        connect(manualReload, &QAction::triggered, this, &AppWindow::loadStyleSheet);
-        this->addAction(manualReload);
+    setWindowTitle("Micro Svg Editor");
 
-        setWindowTitle("Micro Svg Editor");
+    resize(1280, 720);
+    canvas = new Canvas(this);
+    setCentralWidget(canvas);
+    openSampleFile();
 
-        resize(1280, 720);
-        drawingCanvas = new Canvas(this);
-        setCentralWidget(drawingCanvas);
-        openSampleFile();
+    MenuBar *menu_bar = new MenuBar(this);
+    setMenuBar(menu_bar);
+    connect(menu_bar, &MenuBar::openRequested, this, &AppWindow::openFile);
+    connect(menu_bar, &MenuBar::saveRequested, this, &AppWindow::saveCurrFile);
+    connect(menu_bar, &MenuBar::saveAsRequested, this, &AppWindow::saveAsFile);
+    connect(menu_bar, &MenuBar::clearRequested, this, &AppWindow::clearCanvas);
+    connect(menu_bar, &MenuBar::newRequested, this, &AppWindow::newFile);
 
-        MenuBar *menuBar = new MenuBar(this);
-        setMenuBar(menuBar);
-        connect(menuBar, &MenuBar::openRequested, this, &AppWindow::openFile);
-        connect(menuBar, &MenuBar::saveRequested, this, &AppWindow::saveCurrFile);
-        connect(menuBar, &MenuBar::saveAsRequested, this, &AppWindow::saveAsFile);
-        connect(menuBar, &MenuBar::clearRequested, this, &AppWindow::clearCanvas);
-        connect(menuBar, &MenuBar::newRequested, this, &AppWindow::newFile);
+    connect(menu_bar, &MenuBar::undoRequested, canvas, &Canvas::undo);
+    connect(menu_bar, &MenuBar::redoRequested, canvas, &Canvas::redo);
 
-        connect(menuBar, &MenuBar::undoRequested, drawingCanvas, &Canvas::undo);
-        connect(menuBar, &MenuBar::redoRequested, drawingCanvas, &Canvas::redo);
+    connect(menu_bar, &MenuBar::cutRequested, canvas, &Canvas::cut);
+    connect(menu_bar, &MenuBar::copyRequested, canvas, &Canvas::copy);
+    connect(menu_bar, &MenuBar::pasteRequested, canvas, &Canvas::paste);
 
-        connect(menuBar, &MenuBar::cutRequested, drawingCanvas, &Canvas::cut);
-        connect(menuBar, &MenuBar::copyRequested, drawingCanvas, &Canvas::copy);
-        connect(menuBar, &MenuBar::pasteRequested, drawingCanvas, &Canvas::paste);
+    connect(menu_bar, &MenuBar::exitRequested, this, &QWidget::close);
 
-        connect(menuBar, &MenuBar::exitRequested, this, &QWidget::close);
+    TopToolBar *top_tb = new TopToolBar("Top Tools", this, tool_action_group);
+    top_tb->setObjectName("TopToolBar");
+    top_tb->setMovable(false);
+    addToolBar(Qt::TopToolBarArea, top_tb);
+    connect(top_tb, &TopToolBar::toolSelected, canvas, &Canvas::setcurr_tool);
 
-        TopToolBar *topToolBar = new TopToolBar("Top Tools", this, toolActionGroup);
-        topToolBar->setObjectName("TopToolBar");
-        topToolBar->setMovable(false);
-        addToolBar(Qt::TopToolBarArea, topToolBar);
-        connect(topToolBar, &TopToolBar::toolSelected, drawingCanvas, &Canvas::setCurrentTool);
-
-        LeftToolBar *leftToolBar = new LeftToolBar("Tools", this, toolActionGroup);
-        leftToolBar->setObjectName("LeftToolBar");
-        leftToolBar->setMovable(false);
-        addToolBar(Qt::LeftToolBarArea, leftToolBar);
-        connect(leftToolBar, &LeftToolBar::toolSelected, drawingCanvas, &Canvas::setCurrentTool);
-    }
+    LeftToolBar *left_tb = new LeftToolBar("Tools", this, tool_action_group);
+    left_tb->setObjectName("LeftToolBar");
+    left_tb->setMovable(false);
+    addToolBar(Qt::LeftToolBarArea, left_tb);
+    connect(left_tb, &LeftToolBar::toolSelected, canvas, &Canvas::setcurr_tool);
+  }
 };
 
 #include "MenuBarOptions.hpp"

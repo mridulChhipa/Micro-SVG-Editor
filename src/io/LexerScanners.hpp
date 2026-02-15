@@ -3,69 +3,42 @@
 
 inline Token Lexer::scanTagName()
 {
-    std::string s;
-    while (!rd.eof() && isNameChar(cur()))
-        s += adv();
+  std::string s;
+  while (!rd.eof() && isNameChar(cur()))
+    s += adv();
 
-    return make(TokenType::TAG_NAME, s);
+  return make(TokenType::TAG_NAME, s);
 }
 
 inline Token Lexer::scanAttributeName()
 {
-    std::string s;
-    while (!rd.eof() && (isNameChar(cur()) || cur() == '-' || cur() == ':'))
-        s += adv();
+  std::string s;
+  while (!rd.eof() && (isNameChar(cur()) || cur() == '-' || cur() == ':'))
+    s += adv();
 
-    // std::cout << "Scanned attribute name: " << s << "\n";
-    return make(TokenType::ATTRIBUTE_NAME, s);
+  // std::cout << "Scanned attribute name: " << s << "\n";
+  return make(TokenType::ATTRIBUTE_NAME, s);
 }
 
 inline Token Lexer::scanAttributeValue()
 {
-    char delim = adv();
-    std::string s;
+  char delim = adv();
+  std::string s;
 
-    while (!rd.eof() && cur() != delim)
-    {
-        if (cur() == '&')
-        {
-            adv();
-            std::string ent;
-            while (!rd.eof() && cur() != ';' && ent.size() < 10)
-                ent += adv();
-            if (!rd.eof())
-                adv();
+  while (!rd.eof() && cur() != delim)
+    s += adv();
 
-            if (ent == "lt")
-                s += '<';
-            else if (ent == "gt")
-                s += '>';
-            else if (ent == "amp")
-                s += '&';
-            else if (ent == "apos")
-                s += '\'';
-            else if (ent == "quot")
-                s += '"';
-            else
-                s += '?';
-        }
-        else
-        {
-            s += adv();
-        }
-    }
-
-    if (!rd.eof())
-        adv();
-    return make(TokenType::ATTRIBUTE_VALUE, s);
+  if (!rd.eof())
+    adv();
+  return make(TokenType::ATTRIBUTE_VALUE, s);
 }
 
 inline Token Lexer::scanText()
 {
-    std::string s;
-    while (!rd.eof() && cur() != '<')
-        s += adv();
-    return make(TokenType::TEXT_CONTENT, s);
+  std::string s;
+  while (!rd.eof() && cur() != '<')
+    s += adv();
+  return make(TokenType::TEXT_CONTENT, s);
 }
 
 #endif
