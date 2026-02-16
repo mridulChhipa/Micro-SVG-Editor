@@ -3,6 +3,7 @@
 
 inline Token Lexer::scan()
 {
+  // Generate end of file tokens as required
   if (rd.eof())
     return make(TokenType::END_OF_FILE, "");
 
@@ -11,6 +12,8 @@ inline Token Lexer::scan()
 
   char c = cur();
 
+  // Different checks to detect different kind of tokens 
+  // (Decided by manual observation in different svgs)
   if (c == '<')
   {
     adv();
@@ -61,6 +64,7 @@ inline Token Lexer::scan()
 
   if (in_tag)
   {
+    // If inside a tag then check if a valid tag and generate token for tagname, similarly for attributes and so on
     if (isNameStart(c))
       return scanTagName();
 

@@ -35,7 +35,7 @@ inline void Canvas::createBrush(const GraphicsObjectPtr &obj, QPainter &painter)
                                                             : Qt::MiterJoin);
   painter.setPen(currentPen);
 
-  if (obj->type() == "text")
+  if (obj->type() == "text") // Special conditions to pen for text
   {
     auto textObj = std::dynamic_pointer_cast<Text>(obj);
     if (textObj)
@@ -49,8 +49,6 @@ inline void Canvas::createBrush(const GraphicsObjectPtr &obj, QPainter &painter)
 
 inline void Canvas::drawSVG(QPainter &painter)
 {
-  painter.setRenderHint(QPainter::Antialiasing);
-
   for (const GraphicsObjectPtr &obj : svg.objects)
   {
     QPainterPath path;
@@ -58,7 +56,6 @@ inline void Canvas::drawSVG(QPainter &painter)
     createObject(obj, path, pen);
     painter.setPen(pen);
     createBrush(obj, painter);
-
     QTransform transform = findTransform(obj);
     if (!transform.isIdentity())
     {
@@ -68,20 +65,16 @@ inline void Canvas::drawSVG(QPainter &painter)
     }
     else
       painter.drawPath(path);
-
     if (obj == selected_shape)
     {
-      painter.save();
-
+      painter.save(); // Create a check point to restore pointer later
       if (!transform.isIdentity())
         painter.setTransform(transform, true);
-
       QPen handlePen(Qt::blue, 1, Qt::DashLine);
       painter.setPen(handlePen);
       painter.setBrush(Qt::NoBrush);
       QRectF selRect = path.boundingRect().adjusted(-adjust, -adjust, adjust, adjust);
       painter.drawRect(selRect);
-
       painter.setPen(Qt::blue);
       painter.setBrush(Qt::white);
       for (int i = 0; i < 8; ++i)
@@ -89,7 +82,7 @@ inline void Canvas::drawSVG(QPainter &painter)
         QRectF handleRect = renderHandle(selRect, static_cast<HandleType>(i));
         painter.drawRect(handleRect);
       }
-      painter.restore();
+      painter.restore(); // Restore pointer neccessary because then pen painting the shapes would have been disturbed
     }
   }
 }

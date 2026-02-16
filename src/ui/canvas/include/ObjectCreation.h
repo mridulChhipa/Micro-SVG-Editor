@@ -29,6 +29,7 @@ inline QTransform Canvas::findTransform(const GraphicsObjectPtr &obj)
     return transform;
 
   QString transformStr = QString::fromStdString(obj->transform);
+  // Regex to break and get transform:rotate(a, b, c)
   QRegularExpression rotateRegex(R"(rotate\(\s*([-+]?\d*\.?\d+)(?:\s*,\s*([-+]?\d*\.?\d+)\s*,\s*([-+]?\d*\.?\d+))?\s*\))");
   QRegularExpressionMatch rotateMatch = rotateRegex.match(transformStr);
   if (rotateMatch.hasMatch())

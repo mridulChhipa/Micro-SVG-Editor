@@ -16,7 +16,6 @@ inline Token Lexer::scanAttributeName()
   while (!rd.eof() && (isNameChar(cur()) || cur() == '-' || cur() == ':'))
     s += adv();
 
-  // std::cout << "Scanned attribute name: " << s << "\n";
   return make(TokenType::ATTRIBUTE_NAME, s);
 }
 

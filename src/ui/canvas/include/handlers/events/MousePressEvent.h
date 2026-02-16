@@ -3,12 +3,11 @@
 
 inline void Canvas::mousePressEvent(QMouseEvent *event)
 {
-  QPointF canvasPoint = toCanvasCoordinates(event->pos());
+  QPointF canvas_pnt = toCanvasCoordinates(event->pos());
   if (isPerformingUndoRedo)
     return;
   if (curr_tool != "" && curr_tool != "Freehand")
   {
-    std::cout << "Adding shape: " << curr_tool.toStdString() << std::endl;
     addShapeToCanvas(curr_tool.toStdString(), toCanvasCoordinates(event->pos()));
     update();
   }
@@ -16,7 +15,7 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
   if (event->button() == Qt::LeftButton && curr_tool == "Freehand")
   {
     current_path = QPainterPath();
-    current_path.moveTo(canvasPoint);
+    current_path.moveTo(canvas_pnt);
     is_drawing = true;
     return;
   }
@@ -24,20 +23,21 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
   if (selected_shape)
   {
     isPerformingUndoRedo = false;
-    QPainterPath selPath;
-    QPen selPen;
-    createObject(selected_shape, selPath, selPen);
+    QPainterPath sel_path;
+    QPen sel_pen;
+    createObject(selected_shape, sel_path, sel_pen);
     QTransform transform = findTransform(selected_shape);
 
-    QPointF localPoint = toCanvasCoordinates(event->pos());
+    QPointF local_point = toCanvasCoordinates(event->pos());
+    // Qt does not translates by default the bounding rect so need to do that manually
     if (!transform.isIdentity())
     {
       QTransform inverted = transform.inverted();
-      localPoint = inverted.map(localPoint);
+      local_point = inverted.map(local_point);
     }
 
-    QRectF boundingRect = selPath.boundingRect().adjusted(-adjust, -adjust, adjust, adjust);
-    HandleType handle = hitTestHandles(boundingRect, localPoint);
+    QRectF bnd_rect = sel_path.boundingRect().adjusted(-adjust, -adjust, adjust, adjust);
+    HandleType handle = hitTestHandles(bnd_rect, local_point);
 
     if (handle != HandleType::None)
     {
@@ -45,10 +45,10 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
 
       isPerformingUndoRedo = true;
 
-      undo_stackTemp.push_back(svg.clone()); // Save current state for potential undo
+      temp_stack.push_back(svg.clone()); // Save current state for potential undo
 
       curr_handle = handle;
-      start_rect = boundingRect;
+      start_rect = bnd_rect;
       last_point = toCanvasCoordinates(event->pos()).toPoint();
       dragging = false;
       return;
@@ -61,6 +61,7 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
   curr_handle = HandleType::None;
   isPerformingUndoRedo = false;
 
+  // Reverse order traverse so that you always check hitting from top to bottom
   for (const GraphicsObjectPtr &obj : svg.objects | std::views::reverse)
   {
     QPainterPath path;
@@ -68,31 +69,32 @@ inline void Canvas::mousePressEvent(QMouseEvent *event)
     createObject(obj, path, pen);
     QTransform transform = findTransform(obj);
 
-    QPointF localPoint = toCanvasCoordinates(event->pos());
+    QPointF local_point = toCanvasCoordinates(event->pos());
     if (!transform.isIdentity())
     {
       QTransform inverted = transform.inverted();
-      localPoint = inverted.map(localPoint);
+      local_point = inverted.map(local_point);
     }
 
+    // Adjust bounding rectangle in case of line and polyline
     if (obj->type() == "line" || obj->type() == "polyline")
     {
-      if (path.boundingRect().adjusted(-adjust, -adjust, adjust, adjust).contains(localPoint))
+      if (path.boundingRect().adjusted(-adjust, -adjust, adjust, adjust).contains(local_point))
       {
         dragging = true;
         selected_shape = obj;
         last_point = toCanvasCoordinates(event->pos()).toPoint();
-        undo_stackTemp.push_back(svg.clone());
+        temp_stack.push_back(svg.clone());
         isPerformingUndoRedo = true;
         break;
       }
     }
-    else if (path.boundingRect().contains(localPoint))
+    else if (path.boundingRect().contains(local_point))
     {
       dragging = true;
       selected_shape = obj;
       last_point = toCanvasCoordinates(event->pos()).toPoint();
-      undo_stackTemp.push_back(svg.clone());
+      temp_stack.push_back(svg.clone());
       isPerformingUndoRedo = true;
       break;
     }

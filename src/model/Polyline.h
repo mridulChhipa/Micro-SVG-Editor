@@ -19,11 +19,11 @@ public:
       std::string point;
       while (std::getline(ss, point, ' '))
       {
-        int commaPos = point.find(',');
-        if (commaPos != static_cast<int>(std::string::npos))
+        int comma_pos = point.find(',');
+        if (comma_pos != static_cast<int>(std::string::npos))
         {
-          float x = std::stof(point.substr(0, commaPos));
-          float y = std::stof(point.substr(commaPos + 1));
+          float x = std::stof(point.substr(0, comma_pos));
+          float y = std::stof(point.substr(comma_pos + 1));
           points.emplace_back(x, y);
         }
       }

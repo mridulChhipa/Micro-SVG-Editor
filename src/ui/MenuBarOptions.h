@@ -3,14 +3,18 @@
 
 inline void AppWindow::openFile()
 {
+  // Shows a dialog box to choose which file to open
   QString file_path = QFileDialog::getOpenFileName(this, "Open SVG File", QDir::homePath(), "SVG Files (*.svg)");
   if (!file_path.isEmpty())
   {
     qDebug() << "File opened:" << file_path;
+
+    // Parser parses the file and creates a SVG object
     Reader svg_reader = Reader(file_path);
     Lexer svg_lexer = Lexer(svg_reader);
     Parser svg_parser = Parser(svg_lexer);
     svg_parser.parse();
+    // Once file has been parsed and svg object is created, send the parsed object to canvas and update the working file path
     canvas->updateCanvas(svg_parser.getSVG());
     curr_file_path = file_path.toStdString();
   }
@@ -20,6 +24,7 @@ inline void AppWindow::saveCurrFile()
 {
   if (curr_file_path.empty())
   {
+    // Shows a dialog box to choose file destination
     QString file_path = QFileDialog::getSaveFileName(this, "Save SVG File", QDir::homePath(), "SVG Files (*.svg)");
     if (!file_path.isEmpty())
       curr_file_path = file_path.toStdString();
@@ -29,9 +34,7 @@ inline void AppWindow::saveCurrFile()
       return;
     }
   }
-
   qDebug() << "Saving to:" << QString::fromStdString(curr_file_path);
-
   QFile file(QString::fromStdString(curr_file_path));
   if (file.open(QIODevice::WriteOnly | QIODevice::Text))
   {
@@ -49,18 +52,15 @@ inline void AppWindow::saveCurrFile()
 inline void AppWindow::saveAsFile()
 {
   QString file_path = QFileDialog::getSaveFileName(this, "Save SVG File As", QDir::homePath(), "SVG Files (*.svg)");
-
   if (!file_path.isEmpty())
   {
     curr_file_path = file_path.toStdString();
-
     qDebug() << "Saving to:" << file_path;
-
     QFile file(file_path);
     if (file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
       QTextStream out(&file);
-      out << QString::fromStdString(canvas->currentCanvasToSVG());
+      out << QString::fromStdString(canvas->currentCanvasToSVG()); // Maps to getSvg() and returns an xml
       file.close();
       qDebug() << "File saved successfully.";
     }
@@ -72,7 +72,6 @@ inline void AppWindow::saveAsFile()
 inline void AppWindow::openSampleFile()
 {
   QString file_path = ":testxmls/sample.svg";
-
   qDebug() << "Opening sample file:" << file_path;
   Reader svg_reader = Reader(file_path);
   Lexer svg_lexer = Lexer(svg_reader);
@@ -93,6 +92,7 @@ inline void AppWindow::newFile()
 
   int width = screen_geometry.width();
   int height = screen_geometry.height();
+  // Screen ke area ke 1 / 4 th area ki khali canvas
   canvas->updateCanvasSize(width / 2, height / 2);
   canvas->clearCanvas();
   curr_file_path.clear();

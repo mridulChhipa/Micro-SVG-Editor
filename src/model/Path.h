@@ -15,7 +15,6 @@ public:
     initialiseStyle(attributes);
     if (attributes.count("d"))
     {
-      // std::cout << "Parsing path data: " << attributes.at("d") << std::endl;
       std::istringstream ss(attributes.at("d"));
       char command;
       float x, y;
@@ -23,7 +22,7 @@ public:
       {
         std::vector<std::pair<float, float>> points;
 
-        // Use a loop that checks if the NEXT character is a digit or a sign
+        // Use a loop that checks if the next character is a digit or a sign
         // This prevents the inner loop from consuming the next command letter
         while (ss >> std::ws && (std::isdigit(ss.peek()) || ss.peek() == '-' || ss.peek() == '.'))
         {
@@ -33,7 +32,7 @@ public:
           }
           else
           {
-            ss.clear(); // Clear fail bit if coordinates are malformed
+            ss.clear();
             break;
           }
         }

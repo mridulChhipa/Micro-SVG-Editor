@@ -3,13 +3,15 @@
 
 inline void Canvas::mouseReleaseEvent(QMouseEvent *event)
 {
-  Q_UNUSED(event);
+  Q_UNUSED(event); // Prevent warnings because position is not being used but is required as a parameter
+  // Any kind of event is stopped when we release mouse
   dragging = false;
   is_resizing = false;
   curr_handle = HandleType::None;
 
   if (event->button() == Qt::LeftButton && is_drawing && curr_tool == "Freehand")
   {
+    // Function to draw a freehand sketch
     SVG prev_svg = svg.clone();
 
     is_drawing = false;
@@ -18,6 +20,7 @@ inline void Canvas::mouseReleaseEvent(QMouseEvent *event)
     {
       const QPainterPath::Element &e = current_path.elementAt(i);
 
+      // Parse points according to movement style
       if (e.isMoveTo())
       {
         std::vector<std::pair<float, float>> points;
@@ -62,8 +65,8 @@ inline void Canvas::mouseReleaseEvent(QMouseEvent *event)
 
   if (isPerformingUndoRedo)
   {
-    undo_stack.push_back(undo_stackTemp.back().clone());
-    undo_stackTemp.clear();
+    undo_stack.push_back(temp_stack.back().clone());
+    temp_stack.clear();
     redo_stack.clear();
     isPerformingUndoRedo = false;
   }

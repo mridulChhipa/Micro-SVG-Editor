@@ -41,6 +41,7 @@ public:
     return data[curr];
   }
 
+  // Can create with name next because we are not using namespace std
   char next()
   {
     char c = front();

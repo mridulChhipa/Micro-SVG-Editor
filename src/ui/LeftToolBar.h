@@ -1,5 +1,6 @@
 #ifndef LEFT_TOOLBAR_HPP
 #define LEFT_TOOLBAR_HPP
+
 #include <QToolBar>
 #include <QActionGroup>
 #include <QAction>
@@ -60,6 +61,7 @@ public:
   }
 
 private slots:
+  // This trigers a common signal for all different tools with different tool_name
   void toolSelectionTriggered()
   {
     QAction *action = qobject_cast<QAction *>(sender());
@@ -71,6 +73,7 @@ private slots:
   }
 
 signals:
+  // This signal is emitted with corresponding tool_name
   void toolSelected(const QString &tool_name);
 };
 #endif

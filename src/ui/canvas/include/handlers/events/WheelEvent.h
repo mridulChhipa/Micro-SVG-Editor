@@ -37,7 +37,6 @@ inline void Canvas::zoom_out()
   x_offset = (width() - svg.width * zoom_factor) / 2.0f;
   y_offset = (height() - svg.height * zoom_factor) / 2.0f;
 
-  std::cout << width() - svg.width << " " << height() - svg.height << '\n';
   update();
 }
 
@@ -47,7 +46,6 @@ inline void Canvas::zoom_in()
   x_offset = (width() - svg.width * zoom_factor) / 2.0f;
   y_offset = (height() - svg.height * zoom_factor) / 2.0f;
 
-  std::cout << width() - svg.width << " " << height() - svg.height << '\n';
   update();
 }
 

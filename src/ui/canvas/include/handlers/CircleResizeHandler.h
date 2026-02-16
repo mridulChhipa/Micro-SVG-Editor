@@ -6,17 +6,17 @@
 
 inline void circleResizeHandler(std::shared_ptr<Circle> s, int dx, int dy, bool affects_left, bool affects_right, bool affects_top, bool affects_bottom)
 {
-  double drX = 0, drY = 0;
+  double drx = 0, dry = 0;
   if (affects_left)
-    drX = -dx;
+    drx = -dx;
   else if (affects_right)
-    drX = dx;
+    drx = dx;
   if (affects_top)
-    drY = -dy;
+    dry = -dy;
   else if (affects_bottom)
-    drY = dy;
+    dry = dy;
 
-  double dr = std::abs(drX) > std::abs(drY) ? drX : drY;
+  double dr = std::abs(drx) > std::abs(dry) ? drx : dry;
 
   s->r = std::max(1.0, s->r + dr / 2.0);
   if (affects_left)

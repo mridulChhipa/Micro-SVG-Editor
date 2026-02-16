@@ -23,11 +23,11 @@ Run the following commands to
 ## Fixing Rendering and Harware Acceleration Issues
 - To use hardware acceleration :
     ```
-    # 1. Force Qt to use X11 (Stable)
-    export QT_QPA_PLATFORM=xcb
-
-    # 2. Force Mesa to use the D3D12 driver directly (Fixes Zink Error)
+    # 1. Force Mesa to use the D3D12 driver directly (Fixes Zink Error)
     export GALLIUM_DRIVER=d3d12
+
+    # 2. Force Qt to use X11 (Stable)
+    export QT_QPA_PLATFORM=xcb
 
     Optionally if you have NVIDIA-GPU and want to use it
     # 3. Force the D3D12 driver to pick your NVIDIA card
@@ -43,9 +43,11 @@ Run the following commands to
     If it shows llvmpipe then acceleration is not working and some fixes are required
     ...
     
-- **Note** When you will install libgl and mesa, then version 25.2.8 does not support gpu-acceleration due to which you may need to downgrade to version 24 of mesa. The following command will help you for the corresponding task `
+## **Note**
+- When you will install libgl and mesa, then version 25.2.8 does not support gpu-acceleration due to which you may need to downgrade to version 24 of mesa. The following command will help you for the corresponding task `
 sudo apt-get install --allow-downgrades libgl1-mesa-dri=24.0.5-1ubuntu1 libglx-mesa0=24.0.5-1ubuntu1 libglapi-mesa=24.0.5-1ubuntu1 libegl-mesa0=24.0.5-1ubuntu1 libgbm1=24.0.5-1ubuntu1
 `
+- 
 
 ## Design Decisions
 - To make components as much reusable, the reader and lexer were implemented seprately from the parser.
@@ -75,6 +77,8 @@ This assignment had a strong emphasis on ownership and scoping of variables. One
 
 ## Usage
 - Scroll Wheel works as zoom
+- Undo redo are in edit tab in menubar at the top
+- File opening and saving related commands are in file tab of the menu bar
 
 ## File Organization
 ```
@@ -83,24 +87,24 @@ MicroSvgEditor/
 │   ├── app/
 │   │   └── main.cpp
 │   ├── io/
-│   │   ├── Lexer.hpp
-│   │   ├── LexerCore.hpp
-│   │   ├── LexerHelpers.hpp
-│   │   ├── LexerScanners.hpp
-│   │   ├── LexerSpecial.hpp
-│   │   ├── Parser.hpp
-│   │   ├── Reader.hpp
-│   │   └── Token.hpp
+│   │   ├── Lexer.h
+│   │   ├── LexerCore.h
+│   │   ├── LexerHelpers.h
+│   │   ├── LexerScanners.h
+│   │   ├── LexerSpecial.h
+│   │   ├── Parser.h
+│   │   ├── Reader.h
+│   │   └── Token.h
 │   ├── model/
-│   │   ├── Circle.hpp
-│   │   ├── GraphicsObject.hpp
-│   │   ├── Hexagon.hpp
-│   │   ├── Line.hpp
-│   │   ├── Path.hpp
-│   │   ├── Polyline.hpp
-│   │   ├── Rect.hpp
-│   │   ├── Svg.hpp
-│   │   └── Text.hpp
+│   │   ├── Circle.h
+│   │   ├── GraphicsObject.h
+│   │   ├── Hexagon.h
+│   │   ├── Line.h
+│   │   ├── Path.h
+│   │   ├── Polyline.h
+│   │   ├── Rect.h
+│   │   ├── Svg.h
+│   │   └── Text.h
 │   ├── tests/
 │   │   ├── test_lexer.cpp
 │   │   └── test_parser.cpp
@@ -109,43 +113,49 @@ MicroSvgEditor/
 │   │   │   ├── include/
 │   │   │   │   ├── handlers/
 │   │   │   │   │   ├── events/
-│   │   │   │   │   │   ├── MouseMoveEvent.hpp
-│   │   │   │   │   │   ├── MousePressEvent.hpp
-│   │   │   │   │   │   ├── MouseReleaseEvent.hpp
-│   │   │   │   │   │   └── PaintEvent.hpp
-│   │   │   │   │   ├── CircleResizeHandler.hpp
-│   │   │   │   │   └── HexagonResizeHandler.hpp
+│   │   │   │   │   │   ├── MouseMoveEvent.h
+│   │   │   │   │   │   ├── MousePressEvent.h
+│   │   │   │   │   │   ├── MouseReleaseEvent.h
+│   │   │   │   │   │   ├── PaintEvent.h
+│   │   │   │   │   │   └── WheelEvent.h
+│   │   │   │   │   ├── CircleResizeHandler.h
+│   │   │   │   │   └── HexagonResizeHandler.h
 │   │   │   │   ├── tools/
-│   │   │   │   │   ├── BorderRadiusEdit.hpp
-│   │   │   │   │   ├── CanvasEdit.hpp
-│   │   │   │   │   ├── EditOpacity.hpp
-│   │   │   │   │   ├── StrokeEdit.hpp
-│   │   │   │   │   └── TextEdit.hpp
-│   │   │   │   ├── AddShapes.hpp
-│   │   │   │   ├── BuildPaths.hpp
-│   │   │   │   ├── DragAndResize.hpp
-│   │   │   │   ├── ObjectCreation.hpp
-│   │   │   │   ├── Renderer.hpp
-│   │   │   │   ├── RenderHandles.hpp
-│   │   │   │   ├── StackOperations.hpp
-│   │   │   │   └── Tools.hpp
-│   │   │   ├── Canvas.hpp
-│   │   │   └── HandleType.hpp
+│   │   │   │   │   ├── BorderRadiusEdit.h
+│   │   │   │   │   ├── CanvasEdit.h
+│   │   │   │   │   ├── EditOpacity.h
+│   │   │   │   │   ├── StrokeEdit.h
+│   │   │   │   │   └── TextEdit.h
+│   │   │   │   ├── AddShapes.h
+│   │   │   │   ├── BuildPaths.h
+│   │   │   │   ├── DragAndResize.h
+│   │   │   │   ├── ObjectCreation.h
+│   │   │   │   ├── Paste.h
+│   │   │   │   ├── Renderer.h
+│   │   │   │   ├── RenderHandles.h
+│   │   │   │   ├── StackOperations.h
+│   │   │   │   └── Tools.h
+│   │   │   ├── Canvas.h
+│   │   │   ├── CanvasHeaders.h
+│   │   │   ├── CanvasParts.h
+│   │   │   └── HandleType.h
 │   │   ├── icons/
 │   │   │   ├── circle.jpg
 │   │   │   ├── line.jpg
 │   │   │   ├── polygon.jpg
 │   │   │   └── rectangle.jpg
 │   │   ├── styles/
-│   │   │   ├── LoadStyleSheet.hpp
+│   │   │   ├── LoadStyleSheet.h
 │   │   │   └── style.qss
-│   │   ├── AppWindow.hpp
-│   │   ├── LeftToolBar.hpp
-│   │   ├── MenuBar.hpp
-│   │   ├── MenuBarOptions.hpp
-│   │   └── TopToolBar.hpp
-│   └── CMakeLists.txt
+│   │   ├── AppWindow.h
+│   │   ├── AppWindowHeaders.h
+│   │   ├── LeftToolBar.h
+│   │   ├── MenuBar.h
+│   │   ├── MenuBarOptions.h
+│   │   └── TopToolBar.h
+│   └── resources.qrc
 ├── CMakeLists.txt
+├── .gitignore
 └── README.md
 ```
 

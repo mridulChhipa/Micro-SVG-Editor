@@ -133,19 +133,11 @@ public:
                 svg.add(std::make_shared<Path>(attributes));
               else if (tag_name == "text")
                 svg.add(std::make_shared<Text>(attributes));
-
-              // std::cout << "Created " << tag_name << " with attributes:\n";
-              // for (const auto &attr : attributes)
-              // {
-              //     std::cout << "  " << attr.first << " = " << attr.second << "\n";
-              // }
             }
           }
         }
       }
     }
-
-    // std::cout << svg.toSVG();
   }
 
   SVG getSVG() const { return svg; }

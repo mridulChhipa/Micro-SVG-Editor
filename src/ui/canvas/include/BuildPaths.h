@@ -59,6 +59,7 @@ inline void Canvas::buildShapePath(QPainterPath &path, const std::shared_ptr<Pat
 {
   for (const auto &[command, points] : s->commands)
   {
+    // Move the pen according to desired path shape
     if (command == 'M')
       path.moveTo(QPointF(points[0].first, points[0].second));
     else if (command == 'L')
