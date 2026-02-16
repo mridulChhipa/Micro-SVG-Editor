@@ -2,6 +2,7 @@
 #define CANVAS_HPP
 
 #include "src/ui/canvas/CanvasHeaders.h" // All Qt and other includes
+
 using ShapeVariant = std::variant<std::shared_ptr<Rect>, std::shared_ptr<Circle>, std::shared_ptr<Line>, std::shared_ptr<Polyline>, std::shared_ptr<Path>, std::shared_ptr<Hexagon>, std::shared_ptr<Text>>;
 class Canvas : public QWidget
 {
@@ -43,15 +44,19 @@ private:
   void buildShapePath(QPainterPath &path, const std::shared_ptr<Text> &s);
   void addShapeToCanvas(const std::string, QPointF location);
   // This function is required to match the coordinates of svg to a translated / shifted canvas
-  QPointF toCanvasCoordinates(QPointF point)
-  {
-    point.setX(point.x() / zoom_factor - x_offset);
-    point.setY(point.y() / zoom_factor - y_offset);
-    return point;
-  }
+  QPointF toCanvasCoordinates(QPointF point);
   // Methods for Rendering and Hit-testing handles
   QRectF renderHandle(const QRectF &obj, HandleType handle_type);
   HandleType hitTestHandles(const QRectF &obj, const QPointF &point);
+
+  void strokeEdit(bool &edited);
+  void editBorderRadius(bool &edited);
+  void canvasEdit(bool &edited);
+  void editOpacity(bool &edited, float &prop, std::string title);
+  void textEdit(bool &edited);
+
+  void circleResizeHandler(std::shared_ptr<Circle> s, int dx, int dy, bool affects_left, bool affects_right, bool affects_top, bool affects_bottom);
+  void hexagonResizeHandler(std::shared_ptr<Hexagon> s, int dx, int dy, bool affects_left, bool affects_right, bool affects_top, bool affects_bottom);
 
 protected:
   void mousePressEvent(QMouseEvent *event) override;
@@ -68,14 +73,11 @@ public:
   SVG svg;
   float x_offset{0};
   float y_offset{0};
-  explicit Canvas(QWidget *parent = nullptr) : QWidget(parent), dragging(false)
-  {
-    undo_stack.clear();
-    redo_stack.clear();
-  }
+
+  Canvas(QWidget *parent);
   void updateCanvas(const SVG &newSvg); // Used to update canvas when a file is parsed and opened
   void updateCanvasSize(int w, int h);
-  std::string currentCanvasToSVG() { return svg.toSVG(); }
+  std::string currentCanvasToSVG();
   void clearCanvas();
   void setcurr_tool(const QString &tool_name);
   void undo();
@@ -88,5 +90,4 @@ public:
   void zoom_reset();
 };
 
-#include "src/ui/canvas/CanvasParts.h" // Forward includes
 #endif

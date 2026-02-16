@@ -1,8 +1,8 @@
 #ifndef LEXER_HPP
 #define LEXER_HPP
 
-#include "Reader.h"
-#include "Token.h"
+#include "src/io/Reader.h"
+#include "src/io/Token.h"
 #include <cctype>
 #include <string>
 #include <iostream>
@@ -14,8 +14,8 @@ class Lexer
   bool has_buf{false};
   bool in_tag{false};
 
-  char cur() const { return rd.front(); }
-  char adv() { return rd.next(); }
+  char cur() const;
+  char adv();
   void skip();
   bool isNameStart(char c) const;
   bool isNameChar(char c) const;
@@ -31,14 +31,9 @@ class Lexer
 
 public:
   explicit Lexer(Reader &r) : rd(r) {}
-  bool eof() const { return rd.eof() && !has_buf; }
+  bool eof() const;
   Token front();
   Token next();
 };
-
-#include "LexerHelpers.h"
-#include "LexerCore.h"
-#include "LexerScanners.h"
-#include "LexerSpecial.h"
 
 #endif
