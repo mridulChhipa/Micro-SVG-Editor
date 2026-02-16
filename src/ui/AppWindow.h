@@ -1,31 +1,7 @@
 #ifndef APP_WINDOW_HPP
 #define APP_WINDOW_HPP
 
-#include <QMainWindow>
-#include <QMenuBar>
-#include <QToolBar>
-#include <QAction>
-#include <QStatusBar>
-#include <QFile>
-#include <QTextStream>
-#include <QDebug>
-#include <QFileSystemWatcher>
-#include <QApplication>
-#include <QDir>
-#include <QFileInfo>
-#include <QFileDialog>
-
-#include <QScreen>
-#include <QGuiApplication>
-
-#include "./canvas/Canvas.hpp"
-#include "MenuBar.hpp"
-#include "TopToolBar.hpp"
-#include "LeftToolBar.hpp"
-
-#include "../io/Reader.hpp"
-#include "../io/Lexer.hpp"
-#include "../io/Parser.hpp"
+#include "src/ui/AppWindowHeaders.h"
 
 class AppWindow : public QMainWindow
 {
@@ -77,6 +53,10 @@ public:
 
     connect(menu_bar, &MenuBar::exitRequested, this, &QWidget::close);
 
+    connect(menu_bar, &MenuBar::zoomInRequested, canvas, &Canvas::zoom_in);
+    connect(menu_bar, &MenuBar::zoomOutRequested, canvas, &Canvas::zoom_out);
+    connect(menu_bar, &MenuBar::zoomResetRequested, canvas, &Canvas::zoom_reset);
+
     TopToolBar *top_tb = new TopToolBar("Top Tools", this, tool_action_group);
     top_tb->setObjectName("TopToolBar");
     top_tb->setMovable(false);
@@ -91,7 +71,7 @@ public:
   }
 };
 
-#include "MenuBarOptions.hpp"
-#include "styles/LoadStyleSheet.hpp"
+#include "MenuBarOptions.h"
+#include "styles/LoadStyleSheet.h"
 
 #endif

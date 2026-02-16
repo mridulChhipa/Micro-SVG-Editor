@@ -59,13 +59,8 @@ QToolBar {
     border: none;
     spacing: 5px;
     padding: 4px;
-    background-color: white;
-}
-
-QToolBar {
     background-color: #f3f3f3;
     border-right: 1px solid #e0e0e0;
-    width: 50px;
 }
 
 
@@ -83,12 +78,12 @@ QToolBar QToolButton:hover {
 
 QToolBar#LeftToolBar QToolButton:checked {
     background-color: white;
-    border-left: 4px solid #7719aa; /* The OneNote selection stripe */
+    border-left: 4px solid #7719aa;
     font-weight: bold;
 }
 QToolBar#TopToolBar QToolButton:checked {
     background-color: white;
-    border-bottom: 4px solid #7719aa; /* The OneNote selection stripe */
+    border-bottom: 4px solid #7719aa;
     font-weight: bold;
 }
 

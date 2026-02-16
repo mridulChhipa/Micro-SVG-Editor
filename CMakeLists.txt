@@ -22,17 +22,16 @@ endif()
 message(STATUS "MicroSvgEditor: Using Qt Major Version: ${QT_VERSION_MAJOR}")
 
 set(SRC_SOURCES
-    src/app/main.cpp
+    src/app/main.cc
     src/resources.qrc
 )
 
 set(SRC_HEADERS
-    src/ui/AppWindow.hpp
-    src/ui/canvas/Canvas.hpp
-    src/ui/canvas/HandleType.hpp
-    src/ui/MenuBar.hpp
-    src/ui/TopToolBar.hpp
-    src/ui/LeftToolBar.hpp
+    src/ui/AppWindow.h
+    src/ui/canvas/Canvas.h
+    src/ui/MenuBar.h
+    src/ui/TopToolBar.h
+    src/ui/LeftToolBar.h
 )
 
 add_executable(MicroSvgEditor
@@ -42,17 +41,10 @@ add_executable(MicroSvgEditor
 
 target_include_directories(MicroSvgEditor
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/ui
+        ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(MicroSvgEditor
     PRIVATE
         Qt${QT_VERSION_MAJOR}::Widgets
 )
-
-if(MSVC)
-    target_compile_options(MicroSvgEditor PRIVATE /W4 /permissive- /EHsc)
-else()
-    target_compile_options(MicroSvgEditor PRIVATE -Wall -Wextra -Wpedantic)
-endif()

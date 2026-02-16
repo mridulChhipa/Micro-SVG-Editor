@@ -1,11 +1,11 @@
 #ifndef TOOLS_HPP
 #define TOOLS_HPP
 
-#include "tools/TextEdit.hpp"
-#include "tools/CanvasEdit.hpp"
-#include "tools/StrokeEdit.hpp"
-#include "tools/BorderRadiusEdit.hpp"
-#include "tools/EditOpacity.hpp"
+#include "src/ui/canvas/include/tools/TextEdit.h"
+#include "src/ui/canvas/include/tools/CanvasEdit.h"
+#include "src/ui/canvas/include/tools/StrokeEdit.h"
+#include "src/ui/canvas/include/tools/BorderRadiusEdit.h"
+#include "src/ui/canvas/include/tools/EditOpacity.h"
 
 inline void Canvas::setcurr_tool(const QString &tool_name)
 {

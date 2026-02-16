@@ -1,7 +1,7 @@
 #ifndef CIRCLE_HPP
 #define CIRCLE_HPP
 
-#include "GraphicsObject.hpp"
+#include "GraphicsObject.h"
 #include <sstream>
 
 class Circle : public GraphicsObject

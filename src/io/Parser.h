@@ -1,15 +1,15 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 
-#include "Lexer.hpp"
-#include "../model/SVG.hpp"
-#include "../model/Rect.hpp"
-#include "../model/Circle.hpp"
-#include "../model/Line.hpp"
-#include "../model/Polyline.hpp"
-#include "../model/Path.hpp"
-#include "../model/Hexagon.hpp"
-#include "../model/Text.hpp"
+#include "Lexer.h"
+#include "src/model/SVG.h"
+#include "src/model/Rect.h"
+#include "src/model/Circle.h"
+#include "src/model/Line.h"
+#include "src/model/Polyline.h"
+#include "src/model/Path.h"
+#include "src/model/Hexagon.h"
+#include "src/model/Text.h"
 
 #include <unordered_map>
 #include <iostream>

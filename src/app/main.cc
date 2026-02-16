@@ -1,5 +1,5 @@
 #include <QApplication>
-#include "AppWindow.hpp"
+#include "src/ui/AppWindow.h"
 
 int main(int argc, char *argv[])
 {

@@ -1,7 +1,7 @@
 #ifndef POLYLINE_HPP
 #define POLYLINE_HPP
 
-#include "GraphicsObject.hpp"
+#include "GraphicsObject.h"
 #include <sstream>
 
 class Polyline : public GraphicsObject

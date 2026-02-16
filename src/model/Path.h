@@ -1,7 +1,7 @@
 #ifndef PATH_HPP
 #define PATH_HPP
 
-#include "GraphicsObject.hpp"
+#include "GraphicsObject.h"
 #include <sstream>
 #include <string>
 

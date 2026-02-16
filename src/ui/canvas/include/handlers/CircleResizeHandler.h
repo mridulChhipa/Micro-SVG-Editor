@@ -2,7 +2,7 @@
 #define CIRCLE_HANDLER_HPP
 
 #include <memory>
-#include "../../../../model/Circle.hpp"
+#include "src/model/Circle.h"
 
 inline void circleResizeHandler(std::shared_ptr<Circle> s, int dx, int dy, bool affects_left, bool affects_right, bool affects_top, bool affects_bottom)
 {

@@ -7,8 +7,10 @@ Run the following commands to
 
 ## Environment Setup
 - The following packages need to be installed:
-    `qt6-base`.
-- Need to create a *symbolic link* of `style.qss`.
+    `qt6-base-dev`.
+- Run 
+    1. `sudo snap install cmake --classic` to install cmake. this may take a while.
+    2. `sudo apt install qt6-base-dev`
 
 ## Building the Application (using Cmake)
 - Make a build directory using `mkdir build` at the root folder of the project and enter it through `cd build`

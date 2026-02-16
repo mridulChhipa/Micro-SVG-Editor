@@ -2,7 +2,7 @@
 #define HEX_HANDLER_HPP
 
 #include <memory>
-#include "../../../../model/Hexagon.hpp"
+#include "src/model/Hexagon.h"
 
 inline void hexagonResizeHandler(std::shared_ptr<Hexagon> s, int dx, int dy, bool affects_left, bool affects_right, bool affects_top, bool affects_bottom)
 {

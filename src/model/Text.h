@@ -1,7 +1,7 @@
 #ifndef TEXT_HPP
 #define TEXT_HPP
 
-#include "GraphicsObject.hpp"
+#include "GraphicsObject.h"
 #include <sstream>
 
 class Text : public GraphicsObject

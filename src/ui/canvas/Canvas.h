@@ -1,32 +1,7 @@
 #ifndef CANVAS_HPP
 #define CANVAS_HPP
 
-#include <iostream>
-#include <vector>
-#include <memory>
-#include <ranges>
-#include <algorithm>
-#include <variant>
-#include <optional>
-
-#include <QWidget>
-#include <QMouseEvent>
-#include <QPainter>
-#include <QPainterPath>
-#include <QImage>
-#include <QResizeEvent>
-#include <QRegularExpression>
-#include <QInputDialog>
-
-#include "../../model/SVG.hpp"
-#include "../../model/Rect.hpp"
-#include "../../model/Circle.hpp"
-#include "../../model/Line.hpp"
-#include "../../model/Polyline.hpp"
-#include "../../model/Path.hpp"
-#include "../../model/Hexagon.hpp"
-#include "../../model/Text.hpp"
-#include "HandleType.hpp"
+#include "src/ui/canvas/CanvasHeaders.h"
 
 using ShapeVariant = std::variant<std::shared_ptr<Rect>, std::shared_ptr<Circle>, std::shared_ptr<Line>, std::shared_ptr<Polyline>, std::shared_ptr<Path>, std::shared_ptr<Hexagon>, std::shared_ptr<Text>>;
 
@@ -157,20 +132,11 @@ public:
   void cut();
   void copy();
   void paste();
+
+  void zoom_in();
+  void zoom_out();
+  void zoom_reset();
 };
 
-#include "./include/StackOperations.hpp"
-#include "./include/AddShapes.hpp"
-#include "./include/ObjectCreation.hpp"
-#include "./include/Renderer.hpp"
-#include "./include/DragAndResize.hpp"
-#include "./include/BuildPaths.hpp"
-#include "./include/RenderHandles.hpp"
-#include "./include/Tools.hpp"
-#include "./include/handlers/events/PaintEvent.hpp"
-#include "./include/handlers/events/MousePressEvent.hpp"
-#include "./include/handlers/events/MouseMoveEvent.hpp"
-#include "./include/handlers/events/MouseReleaseEvent.hpp"
-#include "./include/handlers/events/WheelEvent.hpp"
-
+#include "src/ui/canvas/CanvasParts.h"
 #endif

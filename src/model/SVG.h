@@ -1,7 +1,7 @@
 #ifndef SVG_HPP
 #define SVG_HPP
 
-#include "GraphicsObject.hpp"
+#include "GraphicsObject.h"
 #include <sstream>
 #include <vector>
 

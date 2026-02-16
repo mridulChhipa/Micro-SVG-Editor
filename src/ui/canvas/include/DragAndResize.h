@@ -1,8 +1,8 @@
 #ifndef DRAG_AND_RESIZE_HPP
 #define DRAG_AND_RESIZE_HPP
 
-#include "handlers/HexagonResizeHandler.hpp"
-#include "handlers/CircleResizeHandler.hpp"
+#include "src/ui/canvas/include/handlers/HexagonResizeHandler.h"
+#include "src/ui/canvas/include/handlers/CircleResizeHandler.h"
 
 inline void Canvas::applyDrag(const QPoint &delta)
 {

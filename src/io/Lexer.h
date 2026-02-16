@@ -1,8 +1,8 @@
 #ifndef LEXER_HPP
 #define LEXER_HPP
 
-#include "Reader.hpp"
-#include "Token.hpp"
+#include "Reader.h"
+#include "Token.h"
 #include <cctype>
 #include <string>
 #include <iostream>
@@ -36,9 +36,9 @@ public:
   Token next();
 };
 
-#include "LexerHelpers.hpp"
-#include "LexerCore.hpp"
-#include "LexerScanners.hpp"
-#include "LexerSpecial.hpp"
+#include "LexerHelpers.h"
+#include "LexerCore.h"
+#include "LexerScanners.h"
+#include "LexerSpecial.h"
 
 #endif

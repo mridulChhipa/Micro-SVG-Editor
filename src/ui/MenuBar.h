@@ -56,13 +56,13 @@ public:
 
     // View Menu
     QMenu *view_menu = this->addMenu("View");
-    view_menu->addAction("Zoom In");
-    view_menu->addAction("Zoom Out");
-    view_menu->addSeparator();
-    view_menu->addAction("Reset Zoom");
-    view_menu->addAction("Fullscreen");
-    view_menu->addSeparator();
-    view_menu->addAction("Toggle Code / Design View");
+    QAction *zoom_in = view_menu->addAction("Zoom In");
+    QAction *zoom_out = view_menu->addAction("Zoom Out");
+    QAction *zoom_reset = view_menu->addAction("Reset Zoom");
+
+    connect(zoom_in, &QAction::triggered, this, &MenuBar::zoomInRequested);
+    connect(zoom_out, &QAction::triggered, this, &MenuBar::zoomOutRequested);
+    connect(zoom_reset, &QAction::triggered, this, &MenuBar::zoomResetRequested);
   }
 
 signals:
@@ -80,5 +80,9 @@ signals:
   void pasteRequested();
 
   void exitRequested();
+
+  void zoomInRequested();
+  void zoomOutRequested();
+  void zoomResetRequested();
 };
 #endif
