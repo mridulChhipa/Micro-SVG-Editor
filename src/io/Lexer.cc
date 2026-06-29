@@ -1,16 +1,7 @@
 #include "src/io/Lexer.h"
 
-char Lexer::cur() const
-{
-    return rd.front();
-}
+char Lexer::Cur() const { return rd_.Front(); }
 
-char Lexer::adv()
-{
-    return rd.next();
-}
+char Lexer::Adv() { return rd_.Next(); }
 
-bool Lexer::eof() const
-{
-    return rd.eof() && !has_buf;
-}
+bool Lexer::Eof() const { return rd_.Eof() && !has_buf_; }

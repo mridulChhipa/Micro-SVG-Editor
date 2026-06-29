@@ -1,39 +1,38 @@
-#ifndef LEXER_HPP
-#define LEXER_HPP
+#ifndef MICRO_SVG_EDITOR_SRC_IO_LEXER_H_
+#define MICRO_SVG_EDITOR_SRC_IO_LEXER_H_
+
+#include <string>
 
 #include "src/io/Reader.h"
 #include "src/io/Token.h"
-#include <cctype>
-#include <string>
-#include <iostream>
 
-class Lexer
-{
-  Reader &rd;
-  Token buf;
-  bool has_buf{false};
-  bool in_tag{false};
+class Lexer {
+ public:
+  explicit Lexer(Reader& r) : rd_(r) {}
+  bool Eof() const;
+  Token Front();
+  Token Next();
 
-  char cur() const;
-  char adv();
-  void skip();
-  bool isNameStart(char c) const;
-  bool isNameChar(char c) const;
-  Token make(TokenType t, std::string v);
+ private:
+  char Cur() const;
+  char Adv();
+  void Skip();
+  bool IsNameStart(char c) const;
+  bool IsNameChar(char c) const;
+  Token Make(TokenType t, std::string v);
 
-  Token scan();
-  Token scanTagName();
-  Token scanAttributeName();
-  Token scanAttributeValue();
-  Token scanText();
-  Token scanComment();
-  Token scanXml();
+  Token Scan();
+  Token ScanTagName();
+  Token ScanAttributeName();
+  Token ScanAttributeValue();
+  Token ScanText();
+  Token ScanComment();
+  Token ScanXml();
 
-public:
-  explicit Lexer(Reader &r) : rd(r) {}
-  bool eof() const;
-  Token front();
-  Token next();
+  Reader& rd_;
+  Token buf_;
+  bool has_buf_{false};
+  bool in_tag_{false};
 };
 
-#endif
+#endif  // MICRO_SVG_EDITOR_SRC_IO_LEXER_H_

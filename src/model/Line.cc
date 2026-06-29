@@ -1,29 +1,26 @@
 #include "src/model/Line.h"
 
-Line::Line(const std::unordered_map<std::string, std::string> &attributes)
-{
-  initialiseStyle(attributes);
+#include <sstream>
+#include <string>
+
+Line::Line(const std::unordered_map<std::string, std::string>& attributes) {
+  InitialiseStyle(attributes);
   x1 = attributes.count("x1") ? std::stof(attributes.at("x1")) : 0.0f;
   y1 = attributes.count("y1") ? std::stof(attributes.at("y1")) : 0.0f;
   x2 = attributes.count("x2") ? std::stof(attributes.at("x2")) : 0.0f;
   y2 = attributes.count("y2") ? std::stof(attributes.at("y2")) : 0.0f;
 }
 
-std::string Line::type() const
-{
-  return "line";
-}
+std::string Line::Type() const { return "line"; }
 
-std::string Line::toSVG() const
-{
+std::string Line::ToSvg() const {
   std::ostringstream ss;
   ss << "<line x1=\"" << x1 << "\" y1=\"" << y1 << "\" ";
-  ss << "x2=\"" << x2 << "\" y2=\"" << y2 << "\" " << printStyle() << " />";
+  ss << "x2=\"" << x2 << "\" y2=\"" << y2 << "\" " << PrintStyle() << " />";
   return ss.str();
 }
 
-std::shared_ptr<GraphicsObject> Line::clone() const
-{
+std::shared_ptr<GraphicsObject> Line::Clone() const {
   auto copy = std::make_shared<Line>();
   copy->x1 = x1;
   copy->y1 = y1;

@@ -1,57 +1,46 @@
 #include "src/io/Lexer.h"
 
-Token Lexer::scanComment()
-{
-  if (rd.eof() || cur() != '-')
-    return make(TokenType::INVALID, "<!");
-  adv();
-  if (rd.eof() || cur() != '-')
-    return make(TokenType::INVALID, "<!-");
-  adv();
+Token Lexer::ScanComment() {
+  if (rd_.Eof() || Cur() != '-') return Make(TokenType::kInvalid, "<!");
+  Adv();
+  if (rd_.Eof() || Cur() != '-') return Make(TokenType::kInvalid, "<!-");
+  Adv();
 
   std::string s;
-  while (!rd.eof())
-  {
-    if (cur() == '-')
-    {
-      adv();
-      if (!rd.eof() && cur() == '-')
-      {
-        adv();
-        if (!rd.eof() && cur() == '>')
-        {
-          adv();
+  while (!rd_.Eof()) {
+    if (Cur() == '-') {
+      Adv();
+      if (!rd_.Eof() && Cur() == '-') {
+        Adv();
+        if (!rd_.Eof() && Cur() == '>') {
+          Adv();
           break;
         }
         s += "--";
-      }
-      else
+      } else {
         s += '-';
+      }
+    } else {
+      s += Adv();
     }
-    else
-      s += adv();
   }
-  return make(TokenType::COMMENT, s);
+  return Make(TokenType::kComment, s);
 }
 
-Token Lexer::scanXml()
-{
+Token Lexer::ScanXml() {
   std::string s;
 
-  while (!rd.eof())
-  {
-    if (cur() == '?')
-    {
-      adv();
-      if (!rd.eof() && cur() == '>')
-      {
-        adv();
+  while (!rd_.Eof()) {
+    if (Cur() == '?') {
+      Adv();
+      if (!rd_.Eof() && Cur() == '>') {
+        Adv();
         break;
       }
       s += '?';
+    } else {
+      s += Adv();
     }
-    else
-      s += adv();
   }
-  return make(TokenType::XML_DECL, s);
+  return Make(TokenType::kXmlDecl, s);
 }

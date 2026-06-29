@@ -1,35 +1,29 @@
-#ifndef READER_HPP
-#define READER_HPP
+#ifndef MICRO_SVG_EDITOR_SRC_IO_READER_H_
+#define MICRO_SVG_EDITOR_SRC_IO_READER_H_
 
-#include <cstddef>
-#include <fstream>
-#include <iterator>
-#include <stdexcept>
 #include <string>
 
 #include <QString>
-#include <QFile>
 
-class Reader
-{
-  std::string readFile(const QString &path);
+class Reader {
+ public:
+  Reader() = default;
+  explicit Reader(const QString& path);
 
-public:
-  Reader() {};
-  Reader(const QString &path);
+  void Open(const QString& path);
+  bool Eof() const;
+  char Front() const;
 
-  void open(const QString &path);
-  bool eof() const;
-  char front() const;
+  // Named Next (not next) since we are not relying on std naming here.
+  char Next();
+  const std::string& Path() const;
 
-  // Can create with name next because we are not using namespace std
-  char next();
-  const std::string &path() const;
+ private:
+  std::string ReadFile(const QString& path);
 
-private:
-  std::string data;
-  std::string src;
-  int curr = 0;
+  std::string data_;
+  std::string src_;
+  int curr_ = 0;
 };
 
-#endif
+#endif  // MICRO_SVG_EDITOR_SRC_IO_READER_H_

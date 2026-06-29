@@ -1,30 +1,30 @@
 #include "src/ui/canvas/Canvas.h"
 
-void Canvas::mouseMoveEvent(QMouseEvent *event)
-{
-  if ((event->buttons() & Qt::LeftButton) && is_drawing && curr_tool == "Freehand")
-  {
-    current_path.lineTo(toCanvasCoordinates(event->pos()));
+void Canvas::mouseMoveEvent(QMouseEvent* event) {
+  if ((event->buttons() & Qt::LeftButton) && is_drawing_ &&
+      curr_tool_ == "Freehand") {
+    current_path_.lineTo(ToCanvasCoordinates(event->pos()));
     update();
   }
 
-  if (!(event->buttons() & Qt::LeftButton) || !selected_shape || (!dragging && !is_resizing))
+  if (!(event->buttons() & Qt::LeftButton) || !selected_shape_ ||
+      (!dragging_ && !is_resizing_))
     return;
 
-  QPoint delta = toCanvasCoordinates(event->pos()).toPoint() - last_point;
-  last_point = toCanvasCoordinates(event->pos()).toPoint();
+  QPoint delta = ToCanvasCoordinates(event->pos()).toPoint() - last_point_;
+  last_point_ = ToCanvasCoordinates(event->pos()).toPoint();
 
-  QTransform transform = findTransform(selected_shape);
-  if (!transform.isIdentity())
-  {
+  QTransform transform = FindTransform(selected_shape_);
+  if (!transform.isIdentity()) {
     QTransform inverted = transform.inverted();
-    QPointF transformed_delta = inverted.map(QPointF(delta)) - inverted.map(QPointF(0, 0));
+    QPointF transformed_delta =
+        inverted.map(QPointF(delta)) - inverted.map(QPointF(0, 0));
     delta = transformed_delta.toPoint();
   }
 
-  if (!is_resizing)
-    applyDrag(delta);
+  if (!is_resizing_)
+    ApplyDrag(delta);
   else
-    applyResize(delta, curr_handle);
+    ApplyResize(delta, curr_handle_);
   update();
 }

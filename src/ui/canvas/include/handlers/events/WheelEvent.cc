@@ -1,57 +1,52 @@
 #include "src/ui/canvas/Canvas.h"
 
-void Canvas::wheelEvent(QWheelEvent *event)
-{
+void Canvas::wheelEvent(QWheelEvent* event) {
   QPointF mouse_pos = event->position();
 
-  float x_old = (mouse_pos.x() / zoom_factor) - x_offset;
-  float y_old = (mouse_pos.y() / zoom_factor) - y_offset;
+  float x_old = (mouse_pos.x() / zoom_factor_) - x_offset_;
+  float y_old = (mouse_pos.y() / zoom_factor_) - y_offset_;
 
   if (event->angleDelta().y() > 0)
-    zoom_factor *= 1.05;
+    zoom_factor_ *= 1.05;
   else
-    zoom_factor /= 1.05;
+    zoom_factor_ /= 1.05;
 
-  zoom_factor = std::min(zoom_factor, 10.0);
-  zoom_factor = std::max(zoom_factor, 0.3);
+  zoom_factor_ = std::min(zoom_factor_, 10.0);
+  zoom_factor_ = std::max(zoom_factor_, 0.3);
 
-  x_offset = (mouse_pos.x() / zoom_factor) - x_old;
-  y_offset = (mouse_pos.y() / zoom_factor) - y_old;
+  x_offset_ = (mouse_pos.x() / zoom_factor_) - x_old;
+  y_offset_ = (mouse_pos.y() / zoom_factor_) - y_old;
 
   update();
 }
 
-void Canvas::resizeEvent(QResizeEvent *event)
-{
+void Canvas::resizeEvent(QResizeEvent* event) {
   QWidget::resizeEvent(event);
 
-  x_offset = (width() - svg.width * zoom_factor) / 2.0f;
-  y_offset = (height() - svg.height * zoom_factor) / 2.0f;
+  x_offset_ = (width() - svg_.width * zoom_factor_) / 2.0f;
+  y_offset_ = (height() - svg_.height * zoom_factor_) / 2.0f;
   update();
 }
 
-void Canvas::zoom_out()
-{
-  zoom_factor = std::max(zoom_factor / 1.1, 0.3);
-  x_offset = (width() - svg.width * zoom_factor) / 2.0f;
-  y_offset = (height() - svg.height * zoom_factor) / 2.0f;
-
-  update();
-}
-
-void Canvas::zoom_in()
-{
-  zoom_factor = std::min(zoom_factor * 1.1, 10.0);
-  x_offset = (width() - svg.width * zoom_factor) / 2.0f;
-  y_offset = (height() - svg.height * zoom_factor) / 2.0f;
+void Canvas::ZoomOut() {
+  zoom_factor_ = std::max(zoom_factor_ / 1.1, 0.3);
+  x_offset_ = (width() - svg_.width * zoom_factor_) / 2.0f;
+  y_offset_ = (height() - svg_.height * zoom_factor_) / 2.0f;
 
   update();
 }
 
-void Canvas::zoom_reset()
-{
-  zoom_factor = 1;
-  x_offset = (width() - svg.width) / 2.0f;
-  y_offset = (height() - svg.height) / 2.0f;
+void Canvas::ZoomIn() {
+  zoom_factor_ = std::min(zoom_factor_ * 1.1, 10.0);
+  x_offset_ = (width() - svg_.width * zoom_factor_) / 2.0f;
+  y_offset_ = (height() - svg_.height * zoom_factor_) / 2.0f;
+
+  update();
+}
+
+void Canvas::ZoomReset() {
+  zoom_factor_ = 1;
+  x_offset_ = (width() - svg_.width) / 2.0f;
+  y_offset_ = (height() - svg_.height) / 2.0f;
   update();
 }

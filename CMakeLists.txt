@@ -105,3 +105,7 @@ target_link_libraries(MicroSvgEditor
     PRIVATE
         Qt${QT_VERSION_MAJOR}::Widgets
 )
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(MicroSvgEditor PRIVATE -Wall -Wextra)
+endif()

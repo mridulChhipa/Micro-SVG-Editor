@@ -1,59 +1,56 @@
 #include "src/ui/canvas/Canvas.h"
 
-void Canvas::setcurr_tool(const QString &tool_name)
-{
-  curr_tool = tool_name;
-  qDebug() << "Current tool set to:" << curr_tool;
+void Canvas::SetCurrentTool(const QString& tool_name) {
+  curr_tool_ = tool_name;
+  qDebug() << "Current tool set to:" << curr_tool_;
 
   bool edited = false;
-  SVG currentState = svg.clone();
+  SVG current_state = svg_.Clone();
 
-  if (curr_tool == "Delete")
-  {
-    if (selected_shape != nullptr)
-    {
-      auto it = std::find(svg.objects.begin(), svg.objects.end(), selected_shape);
-      if (it != svg.objects.end())
-      {
-        svg.objects.erase(it);
-        selected_shape = nullptr;
+  if (curr_tool_ == "Delete") {
+    if (selected_shape_ != nullptr) {
+      auto it =
+          std::find(svg_.objects.begin(), svg_.objects.end(), selected_shape_);
+      if (it != svg_.objects.end()) {
+        svg_.objects.erase(it);
+        selected_shape_ = nullptr;
         edited = true;
       }
     }
-    curr_tool = "";
-  }
-  else if (curr_tool == "Fill Color" && selected_shape)
-  {
+    curr_tool_ = "";
+  } else if (curr_tool_ == "Fill Color" && selected_shape_) {
     bool ok;
-    QString newColor = QInputDialog::getText(this, "Fill Color", "Enter fill color (e.g. 'red' or '#ff0000'):", QLineEdit::Normal, QString::fromStdString(selected_shape->fill), &ok);
-    if (ok && !newColor.isEmpty())
-    {
-      selected_shape->fill = newColor.toStdString();
+    QString new_color = QInputDialog::getText(
+        this, "Fill Color",
+        "Enter fill color (e.g. 'red' or '#ff0000'):", QLineEdit::Normal,
+        QString::fromStdString(selected_shape_->fill), &ok);
+    if (ok && !new_color.isEmpty()) {
+      selected_shape_->fill = new_color.toStdString();
       edited = true;
     }
-    curr_tool = "";
-  }
-  else if (curr_tool == "Stroke" && selected_shape)
-    strokeEdit(edited);
-  else if (curr_tool == "Border Radius" && selected_shape != nullptr && selected_shape->type() == "rect")
-    editBorderRadius(edited);
-  else if (curr_tool == "Canvas Dimensions")
-    canvasEdit(edited);
-  else if (curr_tool == "Fill Opacity" && selected_shape)
-    editOpacity(edited, selected_shape->fill_opacity, "Fill Opacity");
-  else if (curr_tool == "Stroke Opacity" && selected_shape)
-    editOpacity(edited, selected_shape->stroke_opacity, "Stroke Opacity");
-  else if (curr_tool == "Opacity" && selected_shape)
-    editOpacity(edited, selected_shape->opacity, "Opacity");
-  if (curr_tool == "Text Edit" && selected_shape && selected_shape->type() == "text")
-    textEdit(edited);
-  else if (curr_tool == "Select")
-    selected_shape = nullptr;
+    curr_tool_ = "";
+  } else if (curr_tool_ == "Stroke" && selected_shape_)
+    StrokeEdit(edited);
+  else if (curr_tool_ == "Border Radius" && selected_shape_ != nullptr &&
+           selected_shape_->Type() == "rect")
+    EditBorderRadius(edited);
+  else if (curr_tool_ == "Canvas Dimensions")
+    CanvasEdit(edited);
+  else if (curr_tool_ == "Fill Opacity" && selected_shape_)
+    EditOpacity(edited, selected_shape_->fill_opacity, "Fill Opacity");
+  else if (curr_tool_ == "Stroke Opacity" && selected_shape_)
+    EditOpacity(edited, selected_shape_->stroke_opacity, "Stroke Opacity");
+  else if (curr_tool_ == "Opacity" && selected_shape_)
+    EditOpacity(edited, selected_shape_->opacity, "Opacity");
+  if (curr_tool_ == "Text Edit" && selected_shape_ &&
+      selected_shape_->Type() == "text")
+    TextEdit(edited);
+  else if (curr_tool_ == "Select")
+    selected_shape_ = nullptr;
 
   update();
-  if (edited)
-  {
-    undo_stack.push_back(currentState);
-    redo_stack.clear();
+  if (edited) {
+    undo_stack_.push_back(current_state);
+    redo_stack_.clear();
   }
 }

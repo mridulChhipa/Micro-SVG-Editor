@@ -1,24 +1,25 @@
-#include "Circle.h"
+#include "src/model/Circle.h"
 
-Circle::Circle(const std::unordered_map<std::string, std::string> &attributes)
-{
-  initialiseStyle(attributes);
+#include <sstream>
+#include <string>
+
+Circle::Circle(const std::unordered_map<std::string, std::string>& attributes) {
+  InitialiseStyle(attributes);
   x = std::stof(attributes.at("cx"));
   y = std::stof(attributes.at("cy"));
   r = std::stof(attributes.at("r"));
 }
 
-std::string Circle::toSVG() const
-{
+std::string Circle::ToSvg() const {
   std::ostringstream ss;
-  ss << "<circle cx=\"" << x << "\" cy=\"" << y
-     << "\" r=\"" << r << "\"" << printStyle() << " />";
+  ss << "<circle cx=\"" << x << "\" cy=\"" << y << "\" r=\"" << r << "\""
+     << PrintStyle() << " />";
   return ss.str();
 }
 
-std::string Circle::type() const { return "circle"; }
-std::shared_ptr<GraphicsObject> Circle::clone() const
-{
+std::string Circle::Type() const { return "circle"; }
+
+std::shared_ptr<GraphicsObject> Circle::Clone() const {
   auto copy = std::make_shared<Circle>();
   copy->x = x;
   copy->y = y;

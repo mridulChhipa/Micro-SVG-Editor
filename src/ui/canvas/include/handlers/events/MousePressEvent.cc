@@ -1,100 +1,93 @@
 #include "src/ui/canvas/Canvas.h"
 
-void Canvas::mousePressEvent(QMouseEvent *event)
-{
-  QPointF canvas_pnt = toCanvasCoordinates(event->pos());
-  if (isPerformingUndoRedo)
-    return;
-  if (curr_tool != "" && curr_tool != "Freehand")
-  {
-    addShapeToCanvas(curr_tool.toStdString(), toCanvasCoordinates(event->pos()));
+void Canvas::mousePressEvent(QMouseEvent* event) {
+  QPointF canvas_pnt = ToCanvasCoordinates(event->pos());
+  if (is_performing_undo_redo_) return;
+  if (curr_tool_ != "" && curr_tool_ != "Freehand") {
+    AddShapeToCanvas(curr_tool_.toStdString(),
+                     ToCanvasCoordinates(event->pos()));
     update();
   }
 
-  if (event->button() == Qt::LeftButton && curr_tool == "Freehand")
-  {
-    current_path = QPainterPath();
-    current_path.moveTo(canvas_pnt);
-    is_drawing = true;
+  if (event->button() == Qt::LeftButton && curr_tool_ == "Freehand") {
+    current_path_ = QPainterPath();
+    current_path_.moveTo(canvas_pnt);
+    is_drawing_ = true;
     return;
   }
 
-  if (selected_shape)
-  {
-    isPerformingUndoRedo = false;
+  if (selected_shape_) {
+    is_performing_undo_redo_ = false;
     QPainterPath sel_path;
     QPen sel_pen;
-    createObject(selected_shape, sel_path, sel_pen);
-    QTransform transform = findTransform(selected_shape);
+    CreateObject(selected_shape_, sel_path, sel_pen);
+    QTransform transform = FindTransform(selected_shape_);
 
-    QPointF local_point = toCanvasCoordinates(event->pos());
-    // Qt does not translates by default the bounding rect so need to do that manually
-    if (!transform.isIdentity())
-    {
+    QPointF local_point = ToCanvasCoordinates(event->pos());
+    // Qt does not translates by default the bounding rect so need to do that
+    // manually
+    if (!transform.isIdentity()) {
       QTransform inverted = transform.inverted();
       local_point = inverted.map(local_point);
     }
 
-    QRectF bnd_rect = sel_path.boundingRect().adjusted(-adjust, -adjust, adjust, adjust);
-    HandleType handle = hitTestHandles(bnd_rect, local_point);
+    QRectF bnd_rect =
+        sel_path.boundingRect().adjusted(-kAdjust, -kAdjust, kAdjust, kAdjust);
+    HandleType handle = HitTestHandles(bnd_rect, local_point);
 
-    if (handle != HandleType::None)
-    {
-      is_resizing = true;
+    if (handle != HandleType::kNone) {
+      is_resizing_ = true;
 
-      isPerformingUndoRedo = true;
+      is_performing_undo_redo_ = true;
 
-      temp_stack.push_back(svg.clone()); // Save current state for potential undo
+      temp_stack_.push_back(
+          svg_.Clone());  // Save the current state for a potential undo
 
-      curr_handle = handle;
-      start_rect = bnd_rect;
-      last_point = toCanvasCoordinates(event->pos()).toPoint();
-      dragging = false;
+      curr_handle_ = handle;
+      start_rect_ = bnd_rect;
+      last_point_ = ToCanvasCoordinates(event->pos()).toPoint();
+      dragging_ = false;
       return;
     }
   }
 
-  selected_shape = nullptr;
-  dragging = false;
-  is_resizing = false;
-  curr_handle = HandleType::None;
-  isPerformingUndoRedo = false;
+  selected_shape_ = nullptr;
+  dragging_ = false;
+  is_resizing_ = false;
+  curr_handle_ = HandleType::kNone;
+  is_performing_undo_redo_ = false;
 
   // Reverse order traverse so that you always check hitting from top to bottom
-  for (const GraphicsObjectPtr &obj : svg.objects | std::views::reverse)
-  {
+  for (const GraphicsObjectPtr& obj : svg_.objects | std::views::reverse) {
     QPainterPath path;
     QPen pen;
-    createObject(obj, path, pen);
-    QTransform transform = findTransform(obj);
+    CreateObject(obj, path, pen);
+    QTransform transform = FindTransform(obj);
 
-    QPointF local_point = toCanvasCoordinates(event->pos());
-    if (!transform.isIdentity())
-    {
+    QPointF local_point = ToCanvasCoordinates(event->pos());
+    if (!transform.isIdentity()) {
       QTransform inverted = transform.inverted();
       local_point = inverted.map(local_point);
     }
 
     // Adjust bounding rectangle in case of line and polyline
-    if (obj->type() == "line" || obj->type() == "polyline")
-    {
-      if (path.boundingRect().adjusted(-adjust, -adjust, adjust, adjust).contains(local_point))
-      {
-        dragging = true;
-        selected_shape = obj;
-        last_point = toCanvasCoordinates(event->pos()).toPoint();
-        temp_stack.push_back(svg.clone());
-        isPerformingUndoRedo = true;
+    if (obj->Type() == "line" || obj->Type() == "polyline") {
+      if (path.boundingRect()
+              .adjusted(-kAdjust, -kAdjust, kAdjust, kAdjust)
+              .contains(local_point)) {
+        dragging_ = true;
+        selected_shape_ = obj;
+        last_point_ = ToCanvasCoordinates(event->pos()).toPoint();
+        temp_stack_.push_back(svg_.Clone());
+        is_performing_undo_redo_ = true;
         break;
       }
-    }
-    else if (path.boundingRect().contains(local_point))
-    {
-      dragging = true;
-      selected_shape = obj;
-      last_point = toCanvasCoordinates(event->pos()).toPoint();
-      temp_stack.push_back(svg.clone());
-      isPerformingUndoRedo = true;
+    } else if (path.boundingRect().contains(local_point)) {
+      dragging_ = true;
+      selected_shape_ = obj;
+      last_point_ = ToCanvasCoordinates(event->pos()).toPoint();
+      temp_stack_.push_back(svg_.Clone());
+      is_performing_undo_redo_ = true;
       break;
     }
   }

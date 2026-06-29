@@ -1,16 +1,16 @@
-#ifndef HANDLES_HPP
-#define HANDLES_HPP
-enum class HandleType
-{
-  TopLeft,
-  TopRight,
-  BottomLeft,
-  BottomRight,
-  TopCenter,
-  MiddleLeft,
-  MiddleRight,
-  BottomCenter,
-  None
+#ifndef MICRO_SVG_EDITOR_SRC_UI_CANVAS_HANDLE_TYPE_H_
+#define MICRO_SVG_EDITOR_SRC_UI_CANVAS_HANDLE_TYPE_H_
+
+enum class HandleType {
+  kTopLeft,
+  kTopRight,
+  kBottomLeft,
+  kBottomRight,
+  kTopCenter,
+  kMiddleLeft,
+  kMiddleRight,
+  kBottomCenter,
+  kNone
 };
 
-#endif
+#endif  // MICRO_SVG_EDITOR_SRC_UI_CANVAS_HANDLE_TYPE_H_

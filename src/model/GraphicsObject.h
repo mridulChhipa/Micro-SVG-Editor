@@ -1,16 +1,12 @@
-#ifndef GRAPHICS_OBJECT_HPP
-#define GRAPHICS_OBJECT_HPP
+#ifndef MICRO_SVG_EDITOR_SRC_MODEL_GRAPHICS_OBJECT_H_
+#define MICRO_SVG_EDITOR_SRC_MODEL_GRAPHICS_OBJECT_H_
 
 #include <memory>
 #include <string>
-#include <sstream>
 #include <unordered_map>
-#include <vector>
-#include <utility>
 
-class GraphicsObject
-{
-public:
+class GraphicsObject {
+ public:
   std::string id;
   std::string class_name;
   std::string style;
@@ -26,18 +22,18 @@ public:
   float opacity{1.0f};
   std::string visibility{"visible"};
 
-  GraphicsObject() {};
-  ~GraphicsObject() {};
-  virtual std::string toSVG() const = 0;
-  virtual std::string type() const = 0;
+  GraphicsObject() = default;
+  virtual ~GraphicsObject() = default;
 
-  void initialiseStyle(const std::unordered_map<std::string, std::string> &attributes);
+  virtual std::string ToSvg() const = 0;
+  virtual std::string Type() const = 0;
+  virtual std::shared_ptr<GraphicsObject> Clone() const = 0;
 
-  std::string printStyle() const;
-
-  virtual std::shared_ptr<GraphicsObject> clone() const = 0;
+  void InitialiseStyle(
+      const std::unordered_map<std::string, std::string>& attributes);
+  std::string PrintStyle() const;
 };
 
 using GraphicsObjectPtr = std::shared_ptr<GraphicsObject>;
 
-#endif
+#endif  // MICRO_SVG_EDITOR_SRC_MODEL_GRAPHICS_OBJECT_H_

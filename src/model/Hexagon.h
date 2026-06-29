@@ -1,27 +1,28 @@
-#ifndef HEXAGON_HPP
-#define HEXAGON_HPP
+#ifndef MICRO_SVG_EDITOR_SRC_MODEL_HEXAGON_H_
+#define MICRO_SVG_EDITOR_SRC_MODEL_HEXAGON_H_
 
-#include "GraphicsObject.h"
-#include <sstream>
-#include <limits>
-#include <cmath>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
-class Hexagon : public GraphicsObject
-{
-public:
-  double x, y;
-  double side_length;
+#include "src/model/GraphicsObject.h"
+
+class Hexagon : public GraphicsObject {
+ public:
+  double x{0.0};
+  double y{0.0};
+  double side_length{0.0};
   std::vector<std::pair<double, double>> points;
 
-  Hexagon() {};
-  Hexagon(const std::unordered_map<std::string, std::string> &attributes);
-  ~Hexagon() {};
+  Hexagon() = default;
+  explicit Hexagon(
+      const std::unordered_map<std::string, std::string>& attributes);
 
-  std::string type() const override;
-
-  std::string toSVG() const override;
-
-  std::shared_ptr<GraphicsObject> clone() const override;
+  std::string Type() const override;
+  std::string ToSvg() const override;
+  std::shared_ptr<GraphicsObject> Clone() const override;
 };
 
-#endif
+#endif  // MICRO_SVG_EDITOR_SRC_MODEL_HEXAGON_H_

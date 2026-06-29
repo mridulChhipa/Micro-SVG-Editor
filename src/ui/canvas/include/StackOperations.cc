@@ -1,50 +1,45 @@
 #include "src/ui/canvas/Canvas.h"
 
-// My undo redo stores the whole svg and creates a deepcopy so that new operations don't do changes to ptr in stacks
-void Canvas::undo()
-{
-  selected_shape = nullptr; // Deselect any shape when undoing
-  if (!undo_stack.isEmpty())
-  {
-    redo_stack.push_back(svg.clone());
-    svg = undo_stack.back();
-    undo_stack.pop_back();
+// Undo/redo stores the whole document and deep-copies it, so that later edits
+// do not mutate the snapshots already held in the stacks.
+void Canvas::Undo() {
+  selected_shape_ = nullptr;  // Deselect any shape when undoing
+  if (!undo_stack_.isEmpty()) {
+    redo_stack_.push_back(svg_.Clone());
+    svg_ = undo_stack_.back();
+    undo_stack_.pop_back();
     update();
   }
 }
 
-void Canvas::redo()
-{
-  selected_shape = nullptr;
-  if (!redo_stack.isEmpty())
-  {
-    undo_stack.push_back(svg.clone());
-    svg = redo_stack.back();
-    redo_stack.pop_back();
+void Canvas::Redo() {
+  selected_shape_ = nullptr;
+  if (!redo_stack_.isEmpty()) {
+    undo_stack_.push_back(svg_.Clone());
+    svg_ = redo_stack_.back();
+    redo_stack_.pop_back();
     update();
   }
 }
 
-void Canvas::cut()
-{
-  if (selected_shape != nullptr)
-  {
-    undo_stack.push_back(svg.clone());
-    redo_stack.clear();
+void Canvas::Cut() {
+  if (selected_shape_ != nullptr) {
+    undo_stack_.push_back(svg_.Clone());
+    redo_stack_.clear();
 
-    copy();
-    auto it = std::find(svg.objects.begin(), svg.objects.end(), selected_shape);
-    if (it != svg.objects.end())
-    {
-      svg.objects.erase(it);
-      selected_shape = nullptr;
+    Copy();
+    auto it =
+        std::find(svg_.objects.begin(), svg_.objects.end(), selected_shape_);
+    if (it != svg_.objects.end()) {
+      svg_.objects.erase(it);
+      selected_shape_ = nullptr;
     }
     update();
   }
 }
 
-void Canvas::copy()
-{
-  if (selected_shape != nullptr)
-    clipboard_shape = selected_shape->clone(); // Deep copy of the selected shape
+void Canvas::Copy() {
+  if (selected_shape_ != nullptr)
+    clipboard_shape_ =
+        selected_shape_->Clone();  // Deep copy of the selected shape
 }

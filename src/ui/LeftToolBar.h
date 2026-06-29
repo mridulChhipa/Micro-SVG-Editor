@@ -1,27 +1,31 @@
-#ifndef LEFT_TOOLBAR_HPP
-#define LEFT_TOOLBAR_HPP
+#ifndef MICRO_SVG_EDITOR_SRC_UI_LEFT_TOOL_BAR_H_
+#define MICRO_SVG_EDITOR_SRC_UI_LEFT_TOOL_BAR_H_
 
-#include <QToolBar>
-#include <QActionGroup>
 #include <QAction>
+#include <QActionGroup>
+#include <QToolBar>
 
-class LeftToolBar : public QToolBar
-{
+class LeftToolBar : public QToolBar {
   Q_OBJECT
 
-private:
-  QAction *addToolAction(QString name, bool is_toggleable, QActionGroup *action_group, QString icon_path, QString tooltip);
-  void setupToolbar(QActionGroup *action_group);
+ public:
+  LeftToolBar(const QString& title, QWidget* parent,
+              QActionGroup* action_group);
 
-public:
-  LeftToolBar(const QString &title, QWidget *parent, QActionGroup *action_group);
+ private slots:
+  // Triggers a common signal for all the different tools, each with its own
+  // tool_name.
+  void ToolSelectionTriggered();
 
-private slots:
-  // This trigers a common signal for all different tools with different tool_name
-  void toolSelectionTriggered();
+ signals:
+  // Emitted with the corresponding tool_name.
+  void toolSelected(const QString& tool_name);
 
-signals:
-  // This signal is emitted with corresponding tool_name
-  void toolSelected(const QString &tool_name);
+ private:
+  QAction* AddToolAction(QString name, bool is_toggleable,
+                         QActionGroup* action_group, QString icon_path,
+                         QString tooltip);
+  void SetupToolbar(QActionGroup* action_group);
 };
-#endif
+
+#endif  // MICRO_SVG_EDITOR_SRC_UI_LEFT_TOOL_BAR_H_

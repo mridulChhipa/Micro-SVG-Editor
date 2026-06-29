@@ -1,17 +1,17 @@
 #include "src/model/Polyline.h"
 
-Polyline::Polyline(const std::unordered_map<std::string, std::string> &attributes)
-{
-  initialiseStyle(attributes);
-  if (attributes.count("points"))
-  {
+#include <sstream>
+#include <string>
+
+Polyline::Polyline(
+    const std::unordered_map<std::string, std::string>& attributes) {
+  InitialiseStyle(attributes);
+  if (attributes.count("points")) {
     std::istringstream ss(attributes.at("points"));
     std::string point;
-    while (std::getline(ss, point, ' '))
-    {
+    while (std::getline(ss, point, ' ')) {
       int comma_pos = point.find(',');
-      if (comma_pos != static_cast<int>(std::string::npos))
-      {
+      if (comma_pos != static_cast<int>(std::string::npos)) {
         float x = std::stof(point.substr(0, comma_pos));
         float y = std::stof(point.substr(comma_pos + 1));
         points.emplace_back(x, y);
@@ -20,22 +20,19 @@ Polyline::Polyline(const std::unordered_map<std::string, std::string> &attribute
   }
 }
 
-std::string Polyline::type() const { return "polyline"; }
+std::string Polyline::Type() const { return "polyline"; }
 
-std::string Polyline::toSVG() const
-{
+std::string Polyline::ToSvg() const {
   std::ostringstream ss;
   ss << "<polyline points=\"";
-  for (const auto &point : points)
-  {
+  for (const auto& point : points) {
     ss << point.first << "," << point.second << " ";
   }
-  ss << "\" " << printStyle() << "/>";
+  ss << "\" " << PrintStyle() << "/>";
   return ss.str();
 }
 
-std::shared_ptr<GraphicsObject> Polyline::clone() const
-{
+std::shared_ptr<GraphicsObject> Polyline::Clone() const {
   auto copy = std::make_shared<Polyline>();
   copy->points = points;
   copy->fill = fill;

@@ -1,19 +1,19 @@
-#ifndef MENU_BAR_SETUP_HPP
-#define MENU_BAR_SETUP_HPP
+#ifndef MICRO_SVG_EDITOR_SRC_UI_MENU_BAR_H_
+#define MICRO_SVG_EDITOR_SRC_UI_MENU_BAR_H_
 
-#include <QMenuBar>
-#include <QMenu>
 #include <QAction>
 #include <QFont>
+#include <QMenu>
+#include <QMenuBar>
 
-class MenuBar : public QMenuBar
-{
+class MenuBar : public QMenuBar {
   Q_OBJECT
-public:
-  MenuBar(QWidget *parent);
-  void setupMenus();
 
-signals:
+ public:
+  explicit MenuBar(QWidget* parent);
+  void SetupMenus();
+
+ signals:
   void openRequested();
   void saveRequested();
   void saveAsRequested();
@@ -33,4 +33,5 @@ signals:
   void zoomOutRequested();
   void zoomResetRequested();
 };
-#endif
+
+#endif  // MICRO_SVG_EDITOR_SRC_UI_MENU_BAR_H_

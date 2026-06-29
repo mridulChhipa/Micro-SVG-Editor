@@ -1,22 +1,25 @@
-#ifndef CIRCLE_HPP
-#define CIRCLE_HPP
+#ifndef MICRO_SVG_EDITOR_SRC_MODEL_CIRCLE_H_
+#define MICRO_SVG_EDITOR_SRC_MODEL_CIRCLE_H_
 
-#include "GraphicsObject.h"
-#include <sstream>
+#include <memory>
+#include <string>
+#include <unordered_map>
 
-class Circle : public GraphicsObject
-{
-public:
+#include "src/model/GraphicsObject.h"
+
+class Circle : public GraphicsObject {
+ public:
   float x{0.0f};
   float y{0.0f};
   float r{0.0f};
 
-  Circle (){};
-  Circle(const std::unordered_map<std::string, std::string> &attributes);
-  ~Circle(){};
+  Circle() = default;
+  explicit Circle(
+      const std::unordered_map<std::string, std::string>& attributes);
 
-  std::string toSVG() const override;
-  std::string type() const override;
-  std::shared_ptr<GraphicsObject> clone() const override;
+  std::string ToSvg() const override;
+  std::string Type() const override;
+  std::shared_ptr<GraphicsObject> Clone() const override;
 };
-#endif
+
+#endif  // MICRO_SVG_EDITOR_SRC_MODEL_CIRCLE_H_

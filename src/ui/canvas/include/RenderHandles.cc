@@ -1,57 +1,53 @@
 #include "src/ui/canvas/Canvas.h"
 
-QRectF Canvas::renderHandle(const QRectF &obj, HandleType handle_type)
-{
+QRectF Canvas::RenderHandle(const QRectF& obj, HandleType handle_type) {
   double x, y;
-  switch (handle_type)
-  {
-  case HandleType::TopLeft:
-    x = obj.left();
-    y = obj.top();
-    break;
-  case HandleType::TopCenter:
-    x = obj.center().x();
-    y = obj.top();
-    break;
-  case HandleType::TopRight:
-    x = obj.right();
-    y = obj.top();
-    break;
-  case HandleType::MiddleLeft:
-    x = obj.left();
-    y = obj.center().y();
-    break;
-  case HandleType::MiddleRight:
-    x = obj.right();
-    y = obj.center().y();
-    break;
-  case HandleType::BottomLeft:
-    x = obj.left();
-    y = obj.bottom();
-    break;
-  case HandleType::BottomCenter:
-    x = obj.center().x();
-    y = obj.bottom();
-    break;
-  case HandleType::BottomRight:
-    x = obj.right();
-    y = obj.bottom();
-    break;
-  default:
-    x = obj.left();
-    y = obj.top();
-    break;
+  switch (handle_type) {
+    case HandleType::kTopLeft:
+      x = obj.left();
+      y = obj.top();
+      break;
+    case HandleType::kTopCenter:
+      x = obj.center().x();
+      y = obj.top();
+      break;
+    case HandleType::kTopRight:
+      x = obj.right();
+      y = obj.top();
+      break;
+    case HandleType::kMiddleLeft:
+      x = obj.left();
+      y = obj.center().y();
+      break;
+    case HandleType::kMiddleRight:
+      x = obj.right();
+      y = obj.center().y();
+      break;
+    case HandleType::kBottomLeft:
+      x = obj.left();
+      y = obj.bottom();
+      break;
+    case HandleType::kBottomCenter:
+      x = obj.center().x();
+      y = obj.bottom();
+      break;
+    case HandleType::kBottomRight:
+      x = obj.right();
+      y = obj.bottom();
+      break;
+    default:
+      x = obj.left();
+      y = obj.top();
+      break;
   }
-  return QRectF(x - handle_size / 2, y - handle_size / 2, handle_size, handle_size);
+  return QRectF(x - kHandleSize / 2, y - kHandleSize / 2, kHandleSize,
+                kHandleSize);
 }
 
-HandleType Canvas::hitTestHandles(const QRectF &obj, const QPointF &point)
-{
-  for (int i = 0; i < 8; ++i)
-  {
-    QRectF handleRect = renderHandle(obj, static_cast<HandleType>(i));
-    if (handleRect.contains(point))
-      return static_cast<HandleType>(i);
+HandleType Canvas::HitTestHandles(const QRectF& obj, const QPointF& point) {
+  for (int i = 0; i < 8; ++i) {
+    QRectF handle_rect = RenderHandle(obj, static_cast<HandleType>(i));
+    if (handle_rect.contains(point)) return static_cast<HandleType>(i);
   }
-  return HandleType::None;
+  return HandleType::kNone;
 }

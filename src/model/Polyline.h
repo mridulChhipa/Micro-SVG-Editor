@@ -1,21 +1,25 @@
-#ifndef POLYLINE_HPP
-#define POLYLINE_HPP
+#ifndef MICRO_SVG_EDITOR_SRC_MODEL_POLYLINE_H_
+#define MICRO_SVG_EDITOR_SRC_MODEL_POLYLINE_H_
 
-#include "GraphicsObject.h"
-#include <sstream>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
-class Polyline : public GraphicsObject
-{
-public:
+#include "src/model/GraphicsObject.h"
+
+class Polyline : public GraphicsObject {
+ public:
   std::vector<std::pair<float, float>> points;
 
-  Polyline() {};
-  Polyline(const std::unordered_map<std::string, std::string> &attributes);
-  ~Polyline() {};
+  Polyline() = default;
+  explicit Polyline(
+      const std::unordered_map<std::string, std::string>& attributes);
 
-  std::string type() const override;
-  std::string toSVG() const override;
-  std::shared_ptr<GraphicsObject> clone() const override;
+  std::string Type() const override;
+  std::string ToSvg() const override;
+  std::shared_ptr<GraphicsObject> Clone() const override;
 };
 
-#endif
+#endif  // MICRO_SVG_EDITOR_SRC_MODEL_POLYLINE_H_

@@ -1,93 +1,110 @@
-#ifndef CANVAS_HPP
-#define CANVAS_HPP
+#ifndef MICRO_SVG_EDITOR_SRC_UI_CANVAS_CANVAS_H_
+#define MICRO_SVG_EDITOR_SRC_UI_CANVAS_CANVAS_H_
 
-#include "src/ui/canvas/CanvasHeaders.h" // All Qt and other includes
+#include "src/ui/canvas/CanvasHeaders.h"  // All Qt and other includes.
 
-using ShapeVariant = std::variant<std::shared_ptr<Rect>, std::shared_ptr<Circle>, std::shared_ptr<Line>, std::shared_ptr<Polyline>, std::shared_ptr<Path>, std::shared_ptr<Hexagon>, std::shared_ptr<Text>>;
-class Canvas : public QWidget
-{
+using ShapeVariant =
+    std::variant<std::shared_ptr<Rect>, std::shared_ptr<Circle>,
+                 std::shared_ptr<Line>, std::shared_ptr<Polyline>,
+                 std::shared_ptr<Path>, std::shared_ptr<Hexagon>,
+                 std::shared_ptr<Text>>;
+
+class Canvas : public QWidget {
   Q_OBJECT
-private:
-  bool dragging{false};
-  bool is_resizing{false};
-  QPoint last_point;
-  HandleType curr_handle{HandleType::None};
-  QRectF start_rect;
-  QVector<SVG> undo_stack;
-  QVector<SVG> redo_stack;
-  QVector<SVG> temp_stack; // Used for undo / redo while dragging and resizing
-  bool isPerformingUndoRedo{false};
-  bool is_drawing = false;
-  QPainterPath current_path;
-  GraphicsObjectPtr clipboard_shape{nullptr};
-  const int handle_size = 8;
-  const int adjust = 20;
-  double zoom_factor = 1;
-  // Shape variants to access varying members directly (Reference: BeQuant.dev C++ Track)
-  std::optional<ShapeVariant> toShapeVariant(const GraphicsObjectPtr &obj);
-  // Drawing related functions
-  QTransform findTransform(const GraphicsObjectPtr &obj);
-  void createObject(const GraphicsObjectPtr &obj, QPainterPath &path, QPen &pen);
-  void applyDashArray(QPen &pen, const std::string &dasharray);
-  void createBrush(const GraphicsObjectPtr &obj, QPainter &painter);
-  void drawSVG(QPainter &painter);
-  void applyDrag(const QPoint &delta);
-  void applyResize(const QPoint &delta, HandleType handle);
+
+ public:
+  GraphicsObjectPtr selected_shape_{nullptr};
+  QString curr_tool_{""};
+  SVG svg_;
+  float x_offset_{0};
+  float y_offset_{0};
+
+  explicit Canvas(QWidget* parent);
+
+  // Used to update the canvas when a file is parsed and opened.
+  void UpdateCanvas(const SVG& new_svg);
+  void UpdateCanvasSize(int w, int h);
+  std::string CurrentCanvasToSvg();
+  void ClearCanvas();
+  void SetCurrentTool(const QString& tool_name);
+  void Undo();
+  void Redo();
+  void Cut();
+  void Copy();
+  void Paste();
+  void ZoomIn();
+  void ZoomOut();
+  void ZoomReset();
+
+ protected:
+  void mousePressEvent(QMouseEvent* event) override;
+  void mouseMoveEvent(QMouseEvent* event) override;
+  void mouseReleaseEvent(QMouseEvent* event) override;
+  void wheelEvent(QWheelEvent* event) override;
+  void resizeEvent(QResizeEvent* event) override;
+  void paintEvent(QPaintEvent* event) override;
+
+ private:
+  // Shape variants to access varying members directly.
+  std::optional<ShapeVariant> ToShapeVariant(const GraphicsObjectPtr& obj);
+
+  // Drawing related functions.
+  QTransform FindTransform(const GraphicsObjectPtr& obj);
+  void CreateObject(const GraphicsObjectPtr& obj, QPainterPath& path,
+                    QPen& pen);
+  void ApplyDashArray(QPen& pen, const std::string& dasharray);
+  void CreateBrush(const GraphicsObjectPtr& obj, QPainter& painter);
+  void DrawSvg(QPainter& painter);
+  void ApplyDrag(const QPoint& delta);
+  void ApplyResize(const QPoint& delta, HandleType handle);
   template <typename PointContainer>
-  void buildPointPath(QPainterPath &path, const PointContainer &points, bool close);
-  void buildShapePath(QPainterPath &path, const std::shared_ptr<Rect> &s);
-  void buildShapePath(QPainterPath &path, const std::shared_ptr<Circle> &s);
-  void buildShapePath(QPainterPath &path, const std::shared_ptr<Line> &s);
-  void buildShapePath(QPainterPath &path, const std::shared_ptr<Polyline> &s);
-  void buildShapePath(QPainterPath &path, const std::shared_ptr<Path> &s);
-  void buildShapePath(QPainterPath &path, const std::shared_ptr<Hexagon> &s);
-  void buildShapePath(QPainterPath &path, const std::shared_ptr<Text> &s);
-  void addShapeToCanvas(const std::string, QPointF location);
-  // This function is required to match the coordinates of svg to a translated / shifted canvas
-  QPointF toCanvasCoordinates(QPointF point);
-  // Methods for Rendering and Hit-testing handles
-  QRectF renderHandle(const QRectF &obj, HandleType handle_type);
-  HandleType hitTestHandles(const QRectF &obj, const QPointF &point);
+  void BuildPointPath(QPainterPath& path, const PointContainer& points,
+                      bool close);
+  void BuildShapePath(QPainterPath& path, const std::shared_ptr<Rect>& s);
+  void BuildShapePath(QPainterPath& path, const std::shared_ptr<Circle>& s);
+  void BuildShapePath(QPainterPath& path, const std::shared_ptr<Line>& s);
+  void BuildShapePath(QPainterPath& path, const std::shared_ptr<Polyline>& s);
+  void BuildShapePath(QPainterPath& path, const std::shared_ptr<Path>& s);
+  void BuildShapePath(QPainterPath& path, const std::shared_ptr<Hexagon>& s);
+  void BuildShapePath(QPainterPath& path, const std::shared_ptr<Text>& s);
+  void AddShapeToCanvas(const std::string name, QPointF location);
 
-  void strokeEdit(bool &edited);
-  void editBorderRadius(bool &edited);
-  void canvasEdit(bool &edited);
-  void editOpacity(bool &edited, float &prop, std::string title);
-  void textEdit(bool &edited);
+  // Matches svg coordinates to a translated / shifted canvas.
+  QPointF ToCanvasCoordinates(QPointF point);
 
-  void circleResizeHandler(std::shared_ptr<Circle> s, int dx, int dy, bool affects_left, bool affects_right, bool affects_top, bool affects_bottom);
-  void hexagonResizeHandler(std::shared_ptr<Hexagon> s, int dx, int dy, bool affects_left, bool affects_right, bool affects_top, bool affects_bottom);
+  // Methods for rendering and hit-testing handles.
+  QRectF RenderHandle(const QRectF& obj, HandleType handle_type);
+  HandleType HitTestHandles(const QRectF& obj, const QPointF& point);
 
-protected:
-  void mousePressEvent(QMouseEvent *event) override;
-  void mouseMoveEvent(QMouseEvent *event) override;
-  void mouseReleaseEvent(QMouseEvent *event) override;
-  void wheelEvent(QWheelEvent *event) override;
-  void resizeEvent(QResizeEvent *event) override;
-  void paintEvent(QPaintEvent *event) override;
+  void StrokeEdit(bool& edited);
+  void EditBorderRadius(bool& edited);
+  void CanvasEdit(bool& edited);
+  void EditOpacity(bool& edited, float& prop, std::string title);
+  void TextEdit(bool& edited);
 
-public:
-  // Names self sufficient for there meaning
-  GraphicsObjectPtr selected_shape{nullptr};
-  QString curr_tool{""};
-  SVG svg;
-  float x_offset{0};
-  float y_offset{0};
+  void CircleResizeHandler(std::shared_ptr<Circle> s, int dx, int dy,
+                           bool affects_left, bool affects_right,
+                           bool affects_top, bool affects_bottom);
+  void HexagonResizeHandler(std::shared_ptr<Hexagon> s, int dx, int dy,
+                            bool affects_left, bool affects_right,
+                            bool affects_top, bool affects_bottom);
 
-  Canvas(QWidget *parent);
-  void updateCanvas(const SVG &newSvg); // Used to update canvas when a file is parsed and opened
-  void updateCanvasSize(int w, int h);
-  std::string currentCanvasToSVG();
-  void clearCanvas();
-  void setcurr_tool(const QString &tool_name);
-  void undo();
-  void redo();
-  void cut();
-  void copy();
-  void paste();
-  void zoom_in();
-  void zoom_out();
-  void zoom_reset();
+  bool dragging_{false};
+  bool is_resizing_{false};
+  QPoint last_point_;
+  HandleType curr_handle_{HandleType::kNone};
+  QRectF start_rect_;
+  QVector<SVG> undo_stack_;
+  QVector<SVG> redo_stack_;
+  // Used for undo / redo while dragging and resizing.
+  QVector<SVG> temp_stack_;
+  bool is_performing_undo_redo_{false};
+  bool is_drawing_ = false;
+  QPainterPath current_path_;
+  GraphicsObjectPtr clipboard_shape_{nullptr};
+  static constexpr int kHandleSize = 8;
+  static constexpr int kAdjust = 20;
+  double zoom_factor_ = 1;
 };
 
-#endif
+#endif  // MICRO_SVG_EDITOR_SRC_UI_CANVAS_CANVAS_H_

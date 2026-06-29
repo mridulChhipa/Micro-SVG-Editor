@@ -1,52 +1,45 @@
 #include "src/io/Lexer.h"
+
+#include <cctype>
+
 /*
-We treat most recently scanned token as buffer if it has been read ,
-then we set it false otherwise get some new buffer and say that we have a buffer Yo-ho-ho :)
+We treat the most recently scanned token as a buffer; if it has been read we set
+the flag false, otherwise we scan a new one and mark that we have a buffer.
 */
 
-Token Lexer::front()
-{
-  if (!has_buf)
-  {
-    buf = scan();
-    has_buf = true;
+Token Lexer::Front() {
+  if (!has_buf_) {
+    buf_ = Scan();
+    has_buf_ = true;
   }
-  return buf;
+  return buf_;
 }
 
-Token Lexer::next()
-{
-  if (has_buf)
-  {
-    has_buf = false;
-    return buf;
+Token Lexer::Next() {
+  if (has_buf_) {
+    has_buf_ = false;
+    return buf_;
   }
 
-  Token tok = scan(); // Generate the next token
+  Token tok = Scan();  // Generate the next token.
   return tok;
 }
 
-// Skips all types of whitespace characters not just an empty space (like \r, \n, etc)
-void Lexer::skip()
-{
-  while (!rd.eof() && std::isspace(static_cast<unsigned char>(cur())))
-    adv();
+// Skips every kind of whitespace character, not just a plain space
+// (like \r, \n, etc).
+void Lexer::Skip() {
+  while (!rd_.Eof() && std::isspace(static_cast<unsigned char>(Cur()))) Adv();
 }
 
-// If what we consider as a tag name or attribute name opening is valid or not
-// These following two functions take care of naming rules
-bool Lexer::isNameChar(char c) const
-{
+// Whether a character may open or continue a tag/attribute name. These two
+// helpers encode the naming rules.
+bool Lexer::IsNameChar(char c) const {
   return std::isalnum(static_cast<unsigned char>(c));
 }
 
-bool Lexer::isNameStart(char c) const
-{
+bool Lexer::IsNameStart(char c) const {
   return std::isalpha(static_cast<unsigned char>(c));
 }
 
-// Creates a Token by calling it firstly defined constructor
-Token Lexer::make(TokenType t, std::string v)
-{
-  return {t, std::move(v)};
-}
+// Creates a Token using its defined constructor.
+Token Lexer::Make(TokenType t, std::string v) { return {t, std::move(v)}; }

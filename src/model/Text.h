@@ -1,12 +1,14 @@
-#ifndef TEXT_HPP
-#define TEXT_HPP
+#ifndef MICRO_SVG_EDITOR_SRC_MODEL_TEXT_H_
+#define MICRO_SVG_EDITOR_SRC_MODEL_TEXT_H_
 
-#include "GraphicsObject.h"
-#include <sstream>
+#include <memory>
+#include <string>
+#include <unordered_map>
 
-class Text : public GraphicsObject
-{
-public:
+#include "src/model/GraphicsObject.h"
+
+class Text : public GraphicsObject {
+ public:
   float x{0.0f};
   float y{0.0f};
   float dx{0.0f};
@@ -18,15 +20,12 @@ public:
 
   std::string content{"Sample Text"};
 
-  Text() {};
-  Text(const std::unordered_map<std::string, std::string> &attributes);
-  ~Text(){};
+  Text() = default;
+  explicit Text(const std::unordered_map<std::string, std::string>& attributes);
 
-  std::string toSVG() const override;
-
-  std::string type() const override;
-
-  std::shared_ptr<GraphicsObject> clone() const override;
+  std::string ToSvg() const override;
+  std::string Type() const override;
+  std::shared_ptr<GraphicsObject> Clone() const override;
 };
 
-#endif
+#endif  // MICRO_SVG_EDITOR_SRC_MODEL_TEXT_H_

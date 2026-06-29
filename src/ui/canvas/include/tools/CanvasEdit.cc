@@ -1,20 +1,19 @@
 #include "src/ui/canvas/Canvas.h"
 
-void Canvas::canvasEdit(bool &edited)
-{
-  bool w_enter, okHeight;
-  int newWidth = QInputDialog::getInt(this, "Canvas Width",
-                                      "Enter canvas width:",
-                                      static_cast<int>(svg.width), 1, 5000, 1, &w_enter);
-  int newHeight = QInputDialog::getInt(this, "Canvas Height",
-                                       "Enter canvas height:",
-                                       static_cast<int>(svg.height), 1, 5000, 1, &okHeight);
-  if (w_enter && okHeight)
-  {
-    svg.width = newWidth;
-    svg.height = newHeight;
+void Canvas::CanvasEdit(bool& edited) {
+  bool w_enter, ok_height;
+  int new_width = QInputDialog::getInt(
+      this, "Canvas Width", "Enter canvas width:", static_cast<int>(svg_.width),
+      1, 5000, 1, &w_enter);
+  int new_height = QInputDialog::getInt(
+      this, "Canvas Height",
+      "Enter canvas height:", static_cast<int>(svg_.height), 1, 5000, 1,
+      &ok_height);
+  if (w_enter && ok_height) {
+    svg_.width = new_width;
+    svg_.height = new_height;
     edited = true;
   }
 
-  curr_tool = "";
+  curr_tool_ = "";
 }

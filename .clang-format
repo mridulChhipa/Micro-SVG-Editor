@@ -1,0 +1,10 @@
+# Google C++ Style. Run: clang-format -i <files>
+BasedOnStyle: Google
+Standard: c++20
+ColumnLimit: 80
+DerivePointerAlignment: false
+PointerAlignment: Left
+# Keep our related/C++-std/Qt/project include groups (blank-line separated)
+# intact; only sort within each group rather than regrouping Qt with <std>.
+SortIncludes: true
+IncludeBlocks: Preserve

@@ -1,33 +1,39 @@
 #include "src/model/Text.h"
 
-Text::Text(const std::unordered_map<std::string, std::string> &attributes)
-{
-  initialiseStyle(attributes);
-  x = (attributes.count("x") ? std::stof(attributes.at("x")) : 0.0f);
-  y = (attributes.count("y") ? std::stof(attributes.at("y")) : 0.0f);
-  dx = (attributes.count("dx") ? std::stof(attributes.at("dx")) : 0.0f);
-  dy = (attributes.count("dy") ? std::stof(attributes.at("dy")) : 0.0f);
-  font_family = (attributes.count("font-family") ? attributes.at("font-family") : "Arial");
-  font_size = (attributes.count("font-size") ? std::stof(attributes.at("font-size")) : 12.0f);
-  font_weight = (attributes.count("font-weight") ? attributes.at("font-weight") : "normal");
-  text_anchor = (attributes.count("text-anchor") ? attributes.at("text-anchor") : "start");
-  content = (attributes.count("content") ? attributes.at("content") : "Sample Text");
+#include <sstream>
+#include <string>
+
+Text::Text(const std::unordered_map<std::string, std::string>& attributes) {
+  InitialiseStyle(attributes);
+  x = attributes.count("x") ? std::stof(attributes.at("x")) : 0.0f;
+  y = attributes.count("y") ? std::stof(attributes.at("y")) : 0.0f;
+  dx = attributes.count("dx") ? std::stof(attributes.at("dx")) : 0.0f;
+  dy = attributes.count("dy") ? std::stof(attributes.at("dy")) : 0.0f;
+  font_family =
+      attributes.count("font-family") ? attributes.at("font-family") : "Arial";
+  font_size = attributes.count("font-size")
+                  ? std::stof(attributes.at("font-size"))
+                  : 12.0f;
+  font_weight =
+      attributes.count("font-weight") ? attributes.at("font-weight") : "normal";
+  text_anchor =
+      attributes.count("text-anchor") ? attributes.at("text-anchor") : "start";
+  content =
+      attributes.count("content") ? attributes.at("content") : "Sample Text";
 }
 
-std::string Text::toSVG() const
-{
+std::string Text::ToSvg() const {
   std::ostringstream ss;
-  ss << "<text x=\"" << x << "\" y=\"" << y << "\" dx=\"" << dx << "\" dy=\"" << dy << "\""
-     << " font-family=\"" << font_family << "\" font-size=\"" << font_size << "\""
-     << " font-weight=\"" << font_weight << "\" text-anchor=\"" << text_anchor << "\""
-     << printStyle() << ">" << content << "</text>";
+  ss << "<text x=\"" << x << "\" y=\"" << y << "\" dx=\"" << dx << "\" dy=\""
+     << dy << "\" font-family=\"" << font_family << "\" font-size=\""
+     << font_size << "\" font-weight=\"" << font_weight << "\" text-anchor=\""
+     << text_anchor << "\"" << PrintStyle() << ">" << content << "</text>";
   return ss.str();
 }
 
-std::string Text::type() const { return "text"; }
+std::string Text::Type() const { return "text"; }
 
-std::shared_ptr<GraphicsObject> Text::clone() const
-{
+std::shared_ptr<GraphicsObject> Text::Clone() const {
   auto copy = std::make_shared<Text>();
   copy->x = x;
   copy->y = y;
@@ -39,7 +45,7 @@ std::shared_ptr<GraphicsObject> Text::clone() const
   copy->text_anchor = text_anchor;
   copy->content = content;
 
-  // Clone style attributes
+  // Clone style attributes.
   copy->id = id;
   copy->class_name = class_name;
   copy->style = style;

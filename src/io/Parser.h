@@ -1,29 +1,24 @@
-#ifndef PARSER_HPP
-#define PARSER_HPP
+#ifndef MICRO_SVG_EDITOR_SRC_IO_PARSER_H_
+#define MICRO_SVG_EDITOR_SRC_IO_PARSER_H_
+
+#include <string>
+#include <unordered_map>
 
 #include "src/io/Lexer.h"
 #include "src/model/SVG.h"
-#include "src/model/Rect.h"
-#include "src/model/Circle.h"
-#include "src/model/Line.h"
-#include "src/model/Polyline.h"
-#include "src/model/Path.h"
-#include "src/model/Hexagon.h"
-#include "src/model/Text.h"
 
-#include <unordered_map>
-#include <iostream>
+class Parser {
+ public:
+  explicit Parser(Lexer& l) : lexer_(l) {}
+  void Parse();
+  void AddTagName(std::string tag_name,
+                  std::unordered_map<std::string, std::string>& attributes);
+  SVG GetSvg() const;
 
-class Parser
-{
-  Lexer &lexer;
-  Token curr;
-  SVG svg;
-
-public:
-  Parser(Lexer &l) : lexer(l) {}
-  void parse();
-  void addTagName(std::string tag_name, std::unordered_map<std::string, std::string> &attributes);
-  SVG getSVG() const;
+ private:
+  Lexer& lexer_;
+  Token curr_;
+  SVG svg_;
 };
-#endif
+
+#endif  // MICRO_SVG_EDITOR_SRC_IO_PARSER_H_

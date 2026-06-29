@@ -1,86 +1,68 @@
 #include "src/io/Lexer.h"
 
-Token Lexer::scan()
-{
-  // Generate end of file tokens as required
-  if (rd.eof())
-    return make(TokenType::END_OF_FILE, "");
+Token Lexer::Scan() {
+  // Generate end of file tokens as required.
+  if (rd_.Eof()) return Make(TokenType::kEndOfFile, "");
 
-  if (rd.eof())
-    return make(TokenType::END_OF_FILE, "");
+  char c = Cur();
 
-  char c = cur();
-
-  // Different checks to detect different kind of tokens
-  // (Decided by manual observation in different svgs)
-  if (c == '<')
-  {
-    adv();
-    if (!rd.eof() && cur() == '/')
-    {
-      adv();
-      in_tag = true;
-      return make(TokenType::CLOSING_TAG_START, "</");
+  // Different checks to detect different kinds of tokens
+  // (decided by manual observation in different svgs).
+  if (c == '<') {
+    Adv();
+    if (!rd_.Eof() && Cur() == '/') {
+      Adv();
+      in_tag_ = true;
+      return Make(TokenType::kClosingTagStart, "</");
     }
-    if (!rd.eof() && cur() == '!')
-    {
-      adv();
-      return scanComment();
+    if (!rd_.Eof() && Cur() == '!') {
+      Adv();
+      return ScanComment();
     }
-    if (!rd.eof() && cur() == '?')
-    {
-      adv();
-      return scanXml();
+    if (!rd_.Eof() && Cur() == '?') {
+      Adv();
+      return ScanXml();
     }
-    in_tag = true;
-    return make(TokenType::OPEN_TAG_START, "<");
+    in_tag_ = true;
+    return Make(TokenType::kOpenTagStart, "<");
   }
 
-  if (c == '>')
-  {
-    adv();
-    in_tag = false;
-    return make(TokenType::TAG_END, ">");
+  if (c == '>') {
+    Adv();
+    in_tag_ = false;
+    return Make(TokenType::kTagEnd, ">");
   }
 
-  if (c == '/')
-  {
-    adv();
-    if (!rd.eof() && cur() == '>')
-    {
-      adv();
-      in_tag = false;
-      return make(TokenType::SELF_CLOSING_TAG_END, "/>");
+  if (c == '/') {
+    Adv();
+    if (!rd_.Eof() && Cur() == '>') {
+      Adv();
+      in_tag_ = false;
+      return Make(TokenType::kSelfClosingTagEnd, "/>");
     }
-    return make(TokenType::INVALID, "/");
+    return Make(TokenType::kInvalid, "/");
   }
 
-  if (c == '=')
-  {
-    adv();
-    return make(TokenType::EQ, "=");
+  if (c == '=') {
+    Adv();
+    return Make(TokenType::kEq, "=");
   }
 
-  if (in_tag)
-  {
-    // If inside a tag then check if a valid tag and generate token for tagname, similarly for attributes and so on
-    if (isNameStart(c))
-      return scanTagName();
+  if (in_tag_) {
+    // If inside a tag then check for a valid tag name and generate the matching
+    // token, similarly for attributes and so on.
+    if (IsNameStart(c)) return ScanTagName();
 
-    if (c == ' ')
-    {
-      while (cur() == ' ')
-        adv();
+    if (c == ' ') {
+      while (Cur() == ' ') Adv();
 
-      if (isNameStart(cur()))
-        return scanAttributeName();
+      if (IsNameStart(Cur())) return ScanAttributeName();
     }
 
-    if (c == '"' || c == '\'')
-      return scanAttributeValue();
-    adv();
-    return make(TokenType::INVALID, "" + c);
+    if (c == '"' || c == '\'') return ScanAttributeValue();
+    Adv();
+    return Make(TokenType::kInvalid, "" + c);
   }
 
-  return scanText();
+  return ScanText();
 }

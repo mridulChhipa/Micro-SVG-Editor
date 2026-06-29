@@ -1,40 +1,32 @@
 #include "src/io/Lexer.h"
 
-Token Lexer::scanTagName()
-{
+Token Lexer::ScanTagName() {
   std::string s;
-  while (!rd.eof() && isNameChar(cur()))
-    s += adv();
+  while (!rd_.Eof() && IsNameChar(Cur())) s += Adv();
 
-  return make(TokenType::TAG_NAME, s);
+  return Make(TokenType::kTagName, s);
 }
 
-Token Lexer::scanAttributeName()
-{
+Token Lexer::ScanAttributeName() {
   std::string s;
-  while (!rd.eof() && (isNameChar(cur()) || cur() == '-' || cur() == ':'))
-    s += adv();
+  while (!rd_.Eof() && (IsNameChar(Cur()) || Cur() == '-' || Cur() == ':'))
+    s += Adv();
 
-  return make(TokenType::ATTRIBUTE_NAME, s);
+  return Make(TokenType::kAttributeName, s);
 }
 
-Token Lexer::scanAttributeValue()
-{
-  char delim = adv();
+Token Lexer::ScanAttributeValue() {
+  char delim = Adv();
   std::string s;
 
-  while (!rd.eof() && cur() != delim)
-    s += adv();
+  while (!rd_.Eof() && Cur() != delim) s += Adv();
 
-  if (!rd.eof())
-    adv();
-  return make(TokenType::ATTRIBUTE_VALUE, s);
+  if (!rd_.Eof()) Adv();
+  return Make(TokenType::kAttributeValue, s);
 }
 
-Token Lexer::scanText()
-{
+Token Lexer::ScanText() {
   std::string s;
-  while (!rd.eof() && cur() != '<')
-    s += adv();
-  return make(TokenType::TEXT_CONTENT, s);
+  while (!rd_.Eof() && Cur() != '<') s += Adv();
+  return Make(TokenType::kTextContent, s);
 }

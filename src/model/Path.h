@@ -1,21 +1,24 @@
-#ifndef PATH_HPP
-#define PATH_HPP
+#ifndef MICRO_SVG_EDITOR_SRC_MODEL_PATH_H_
+#define MICRO_SVG_EDITOR_SRC_MODEL_PATH_H_
 
-#include "GraphicsObject.h"
-#include <sstream>
+#include <memory>
 #include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
-class Path : public GraphicsObject
-{
-public:
+#include "src/model/GraphicsObject.h"
+
+class Path : public GraphicsObject {
+ public:
   std::vector<std::pair<char, std::vector<std::pair<float, float>>>> commands;
 
-  Path() {};
-  Path(const std::unordered_map<std::string, std::string> &attributes);
-  ~Path() {};
+  Path() = default;
+  explicit Path(const std::unordered_map<std::string, std::string>& attributes);
 
-  std::string type() const override;
-  std::string toSVG() const override;
-  std::shared_ptr<GraphicsObject> clone() const override;
+  std::string Type() const override;
+  std::string ToSvg() const override;
+  std::shared_ptr<GraphicsObject> Clone() const override;
 };
-#endif
+
+#endif  // MICRO_SVG_EDITOR_SRC_MODEL_PATH_H_
