@@ -58,10 +58,7 @@ void Canvas::AddShapeToCanvas(const std::string& shape_type, QPointF location) {
     shape_added = true;
   }
 
-  if (shape_added) {
-    undo_stack_.push_back(std::move(prev_state));
-    redo_stack_.clear();
-  }
+  if (shape_added) history_.Push(std::move(prev_state));
 }
 
 }  // namespace micro_svg_editor

@@ -55,17 +55,11 @@ void Canvas::mouseReleaseEvent(QMouseEvent* event) {
     is_drawing_ = false;
     svg_.objects().push_back(BuildFreehandPath());
     current_path_ = QPainterPath();
-    undo_stack_.push_back(std::move(prev_svg));
-    redo_stack_.clear();
+    history_.Push(std::move(prev_svg));
     update();
   }
 
-  if (is_performing_undo_redo_) {
-    undo_stack_.push_back(temp_stack_.back().Clone());
-    temp_stack_.clear();
-    redo_stack_.clear();
-    is_performing_undo_redo_ = false;
-  }
+  if (history_.gesture_active()) history_.CommitGesture();
 }
 
 }  // namespace micro_svg_editor

@@ -2,6 +2,9 @@
 #define MICRO_SVG_EDITOR_SRC_UI_CANVAS_CANVAS_H_
 
 #include "src/ui/canvas/canvas_headers.h"  // All Qt and other includes.
+#include "src/ui/canvas/controllers/clipboard.h"
+#include "src/ui/canvas/controllers/history.h"
+#include "src/ui/canvas/controllers/viewport.h"
 
 namespace micro_svg_editor {
 
@@ -35,12 +38,6 @@ class Canvas : public QWidget {
   void paintEvent(QPaintEvent* event) override;
 
  private:
-  // Drawing related functions.
-  QTransform FindTransform(GraphicsObject* obj);
-  void CreateObject(GraphicsObject* obj, QPainterPath& path, QPen& pen);
-  void ApplyDashArray(QPen& pen, const std::string& dasharray);
-  void CreateBrush(GraphicsObject* obj, QPainter& painter);
-  void DrawSvg(QPainter& painter);
   void ApplyDrag(const QPoint& delta);
   void ApplyResize(const QPoint& delta, HandleType handle);
   void AddShapeToCanvas(const std::string& shape_type, QPointF location);
@@ -49,10 +46,6 @@ class Canvas : public QWidget {
 
   // Matches svg coordinates to a translated / shifted canvas.
   QPointF ToCanvasCoordinates(QPointF point);
-
-  // Methods for rendering and hit-testing handles.
-  QRectF RenderHandle(const QRectF& obj, HandleType handle_type);
-  HandleType HitTestHandles(const QRectF& obj, const QPointF& point);
 
   void DeleteSelectedShape(bool& edited);
   void EditFillColor(bool& edited);
@@ -67,25 +60,16 @@ class Canvas : public QWidget {
   SVG svg_;
   GraphicsObject* selected_shape_ = nullptr;
   QString curr_tool_;
-  float x_offset_{0};
-  float y_offset_{0};
+  Viewport viewport_;
 
   bool dragging_{false};
   bool is_resizing_{false};
   QPoint last_point_;
   HandleType curr_handle_{HandleType::kNone};
-  QRectF start_rect_;
-  std::vector<SVG> undo_stack_;
-  std::vector<SVG> redo_stack_;
-  // Used for undo / redo while dragging and resizing.
-  std::vector<SVG> temp_stack_;
-  bool is_performing_undo_redo_{false};
   bool is_drawing_ = false;
   QPainterPath current_path_;
-  std::unique_ptr<GraphicsObject> clipboard_shape_;
-  static constexpr int kHandleSize = 8;
-  static constexpr int kAdjust = 20;
-  double zoom_factor_ = 1;
+  History history_;
+  Clipboard clipboard_;
 };
 
 }  // namespace micro_svg_editor

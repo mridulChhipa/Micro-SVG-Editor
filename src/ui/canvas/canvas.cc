@@ -2,15 +2,10 @@
 
 namespace micro_svg_editor {
 
-Canvas::Canvas(QWidget* parent) : QWidget(parent), dragging_(false) {
-  undo_stack_.clear();
-  redo_stack_.clear();
-}
+Canvas::Canvas(QWidget* parent) : QWidget(parent) {}
 
 QPointF Canvas::ToCanvasCoordinates(QPointF point) {
-  point.setX(point.x() / zoom_factor_ - x_offset_);
-  point.setY(point.y() / zoom_factor_ - y_offset_);
-  return point;
+  return viewport_.ToCanvas(point);
 }
 
 std::string Canvas::CurrentCanvasToSvg() { return svg_.ToSvg(); }
@@ -30,9 +25,8 @@ void Canvas::UpdateCanvasSize(int w, int h) {
 // document by value because SVG is move-only.
 void Canvas::UpdateCanvas(SVG new_svg) {
   svg_ = std::move(new_svg);
-  x_offset_ = (width() - svg_.width()) / 2.0f;
-  y_offset_ = (height() - svg_.height()) / 2.0f;
-  zoom_factor_ = 1.0;
+  viewport_.Reset();
+  viewport_.Center(width(), height(), svg_.width(), svg_.height());
 
   update();
 }

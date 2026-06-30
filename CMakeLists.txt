@@ -55,12 +55,13 @@ set(SRC_SOURCES
     src/ui/canvas/include/add_shapes.cc
     src/ui/canvas/include/path_builder.cc
     src/ui/canvas/include/drag_and_resize.cc
-    src/ui/canvas/include/object_creation.cc
     src/ui/canvas/include/paste.cc
-    src/ui/canvas/include/render_handles.cc
-    src/ui/canvas/include/renderer.cc
     src/ui/canvas/include/stack_operations.cc
     src/ui/canvas/include/tools.cc
+    src/ui/canvas/handle_geometry.cc
+    src/ui/canvas/shape_geometry.cc
+    src/ui/canvas/selection.cc
+    src/ui/canvas/render/shape_renderer.cc
     src/ui/app_window_constructor.cc
     src/ui/app_window.cc
     src/ui/menu_bar.cc
@@ -84,6 +85,13 @@ set(SRC_HEADERS
     src/model/svg.h
     src/model/text.h
     src/ui/canvas/canvas.h
+    src/ui/canvas/controllers/clipboard.h
+    src/ui/canvas/controllers/history.h
+    src/ui/canvas/controllers/viewport.h
+    src/ui/canvas/handle_geometry.h
+    src/ui/canvas/shape_geometry.h
+    src/ui/canvas/selection.h
+    src/ui/canvas/render/shape_renderer.h
     src/ui/canvas/include/path_builder.h
     src/ui/app_window.h
     src/ui/menu_bar.h

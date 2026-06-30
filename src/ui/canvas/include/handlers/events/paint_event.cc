@@ -1,4 +1,5 @@
 #include "src/ui/canvas/canvas.h"
+#include "src/ui/canvas/render/shape_renderer.h"
 
 namespace micro_svg_editor {
 
@@ -13,8 +14,7 @@ void Canvas::paintEvent(QPaintEvent* event) {
   Zoom Application and translation of canvas according to offset (Zoom using
   scroll wheel makes current point fixed so offsets are applied)
   */
-  painter.scale(zoom_factor_, zoom_factor_);
-  painter.translate(x_offset_, y_offset_);
+  viewport_.Apply(painter);
 
   QRectF drawing_area(0, 0, svg_.width(), svg_.height());
   painter.setBrush(QColor(50, 50, 50));
@@ -24,7 +24,7 @@ void Canvas::paintEvent(QPaintEvent* event) {
   // Sets painter area which requies the translation we did
   painter.setClipRect(drawing_area);
 
-  DrawSvg(painter);  // Draws the parsed document
+  ShapeRenderer().Draw(painter, svg_, selected_shape_);  // Draw the document.
 
   if (!current_path_.isEmpty()) {
     QPen pen(Qt::black, 2);

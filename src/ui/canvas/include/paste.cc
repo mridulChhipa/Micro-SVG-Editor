@@ -3,13 +3,12 @@
 namespace micro_svg_editor {
 
 void Canvas::Paste() {
-  if (clipboard_shape_ == nullptr) return;
+  if (!clipboard_.HasContent()) return;
 
-  undo_stack_.push_back(svg_.Clone());
-  redo_stack_.clear();
+  history_.Push(svg_.Clone());
 
   // Paste a deep copy, slightly shifted so it does not overlap the original.
-  std::unique_ptr<GraphicsObject> copy = clipboard_shape_->Clone();
+  std::unique_ptr<GraphicsObject> copy = clipboard_.Clone();
   copy->Translate(50, 50);
   svg_.Add(std::move(copy));
 

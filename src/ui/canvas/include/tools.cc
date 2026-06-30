@@ -67,10 +67,7 @@ void Canvas::SetCurrentTool(const QString& tool_name) {
     selected_shape_ = nullptr;
 
   update();
-  if (edited) {
-    undo_stack_.push_back(std::move(current_state));
-    redo_stack_.clear();
-  }
+  if (edited) history_.Push(std::move(current_state));
 }
 
 }  // namespace micro_svg_editor

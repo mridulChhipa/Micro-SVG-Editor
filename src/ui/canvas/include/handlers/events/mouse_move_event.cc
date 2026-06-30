@@ -1,4 +1,5 @@
 #include "src/ui/canvas/canvas.h"
+#include "src/ui/canvas/shape_geometry.h"
 
 namespace micro_svg_editor {
 
@@ -16,7 +17,7 @@ void Canvas::mouseMoveEvent(QMouseEvent* event) {
   QPoint delta = ToCanvasCoordinates(event->pos()).toPoint() - last_point_;
   last_point_ = ToCanvasCoordinates(event->pos()).toPoint();
 
-  QTransform transform = FindTransform(selected_shape_);
+  QTransform transform = ShapeTransform(*selected_shape_);
   if (!transform.isIdentity()) {
     QTransform inverted = transform.inverted();
     QPointF transformed_delta =
