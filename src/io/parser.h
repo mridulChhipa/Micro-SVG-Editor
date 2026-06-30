@@ -5,6 +5,7 @@
 #include <unordered_map>
 
 #include "src/io/lexer.h"
+#include "src/model/shape_factory.h"
 #include "src/model/svg.h"
 
 namespace micro_svg_editor {
@@ -30,6 +31,7 @@ class Parser {
   Lexer& lexer_;
   Token curr_;
   SVG svg_;
+  ShapeFactory factory_;
 };
 
 }  // namespace micro_svg_editor

@@ -2,7 +2,7 @@
 
 namespace micro_svg_editor {
 
-AppWindow::AppWindow() {
+AppWindow::AppWindow(ILoader& loader) : loader_(loader) {
   LoadStyleSheet();
 
   tool_action_group_ = new QActionGroup(this);

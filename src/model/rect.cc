@@ -25,25 +25,6 @@ void Rect::Translate(double dx, double dy) {
   y_ += dy;
 }
 
-void Rect::Resize(int dx, int dy, bool affects_left, bool affects_right,
-                  bool affects_top, bool affects_bottom) {
-  if (affects_left) {
-    x_ += dx;
-    width_ -= dx;
-  }
-  if (affects_right) width_ += dx;
-  if (affects_top) {
-    y_ += dy;
-    height_ -= dy;
-  }
-  if (affects_bottom) height_ += dy;
-}
-
-void Rect::SetBorderRadius(double radius) {
-  rx_ = radius;
-  ry_ = radius;
-}
-
 std::string Rect::ToSvg() const {
   std::ostringstream ss;
   ss << "<rect x=\"" << x_ << "\" y=\"" << y_ << "\" width=\"" << width_

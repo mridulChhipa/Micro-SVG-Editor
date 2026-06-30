@@ -50,8 +50,6 @@ void Path::Translate(double dx, double dy) {
     }
 }
 
-void Path::Resize(int, int, bool, bool, bool, bool) {}
-
 std::string Path::ToSvg() const {
   std::ostringstream ss;
   ss << "<path" << PrintStyle() << " d=\"";

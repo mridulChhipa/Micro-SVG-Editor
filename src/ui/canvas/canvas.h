@@ -5,6 +5,7 @@
 #include "src/ui/canvas/controllers/clipboard.h"
 #include "src/ui/canvas/controllers/history.h"
 #include "src/ui/canvas/controllers/viewport.h"
+#include "src/ui/tools/tool_registry.h"
 
 namespace micro_svg_editor {
 
@@ -47,14 +48,6 @@ class Canvas : public QWidget {
   // Matches svg coordinates to a translated / shifted canvas.
   QPointF ToCanvasCoordinates(QPointF point);
 
-  void DeleteSelectedShape(bool& edited);
-  void EditFillColor(bool& edited);
-  void StrokeEdit(bool& edited);
-  void EditBorderRadius(bool& edited);
-  void CanvasEdit(bool& edited);
-  void EditOpacity(const std::string& title, float& prop, bool& edited);
-  void TextEdit(bool& edited);
-
   // The live document and a non-owning pointer to the current selection (which
   // is owned by svg_.objects()).
   SVG svg_;
@@ -70,6 +63,7 @@ class Canvas : public QWidget {
   QPainterPath current_path_;
   History history_;
   Clipboard clipboard_;
+  ToolRegistry tool_registry_;
 };
 
 }  // namespace micro_svg_editor

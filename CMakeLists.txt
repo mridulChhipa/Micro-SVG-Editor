@@ -30,6 +30,7 @@ set(SRC_SOURCES
     src/io/lexer_helpers.cc
     src/io/lexer_scanners.cc
     src/io/lexer_special.cc
+    src/io/svg_loader.cc
     src/model/graphics_object.cc
     src/model/circle.cc
     src/model/hexagon.cc
@@ -39,14 +40,12 @@ set(SRC_SOURCES
     src/model/rect.cc
     src/model/svg.cc
     src/model/text.cc
+    src/model/shape_factory.cc
+    src/model/resize_visitor.cc
     src/app/main.cc
     src/ui/canvas/canvas.cc
     src/ui/styles/load_style_sheet.cc
-    src/ui/canvas/include/tools/stroke_edit.cc
-    src/ui/canvas/include/tools/edit_opacity.cc
-    src/ui/canvas/include/tools/canvas_edit.cc
-    src/ui/canvas/include/tools/border_radius_edit.cc
-    src/ui/canvas/include/tools/text_edit.cc
+    src/ui/tools/tool_registry.cc
     src/ui/canvas/include/handlers/events/mouse_move_event.cc
     src/ui/canvas/include/handlers/events/mouse_press_event.cc
     src/ui/canvas/include/handlers/events/mouse_release_event.cc
@@ -74,8 +73,12 @@ set(SRC_HEADERS
     src/io/reader.h
     src/io/lexer.h
     src/io/parser.h
+    src/io/loader.h
+    src/io/svg_loader.h
     src/model/graphics_object.h
     src/model/shape_visitor.h
+    src/model/shape_factory.h
+    src/model/resize_visitor.h
     src/model/circle.h
     src/model/hexagon.h
     src/model/line.h
@@ -93,6 +96,8 @@ set(SRC_HEADERS
     src/ui/canvas/selection.h
     src/ui/canvas/render/shape_renderer.h
     src/ui/canvas/include/path_builder.h
+    src/ui/tools/tool_action.h
+    src/ui/tools/tool_registry.h
     src/ui/app_window.h
     src/ui/menu_bar.h
     src/ui/top_tool_bar.h
@@ -117,3 +122,10 @@ target_link_libraries(MicroSvgEditor
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(MicroSvgEditor PRIVATE -Wall -Wextra)
 endif()
+
+# Architecture guardrail: `cmake --build . --target check` fails if the layer
+# dependency direction (ui -> io -> model) is violated. See docs/ARCHITECTURE.md.
+add_custom_target(check
+    COMMAND bash ${CMAKE_CURRENT_SOURCE_DIR}/scripts/check_layers.sh
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Checking architecture layering")

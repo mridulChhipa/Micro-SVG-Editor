@@ -1,7 +1,5 @@
 #include "src/model/circle.h"
 
-#include <algorithm>
-#include <cmath>
 #include <sstream>
 #include <string>
 
@@ -28,27 +26,6 @@ void Circle::Accept(ShapeVisitor& visitor) { visitor.Visit(*this); }
 void Circle::Translate(double dx, double dy) {
   x_ += dx;
   y_ += dy;
-}
-
-void Circle::Resize(int dx, int dy, bool affects_left, bool affects_right,
-                    bool affects_top, bool affects_bottom) {
-  double drx = 0, dry = 0;
-  if (affects_left)
-    drx = -dx;
-  else if (affects_right)
-    drx = dx;
-  if (affects_top)
-    dry = -dy;
-  else if (affects_bottom)
-    dry = dy;
-
-  double dr = std::abs(drx) > std::abs(dry) ? drx : dry;
-
-  r_ = std::max(1.0, r_ + dr / 2.0);
-  if (affects_left) x_ += dx / 2.0;
-  if (affects_right) x_ += dx / 2.0;
-  if (affects_top) y_ += dy / 2.0;
-  if (affects_bottom) y_ += dy / 2.0;
 }
 
 std::unique_ptr<GraphicsObject> Circle::Clone() const {

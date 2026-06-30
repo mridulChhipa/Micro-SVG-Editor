@@ -18,9 +18,7 @@
 #include <QTextStream>
 #include <QToolBar>
 
-#include "src/io/lexer.h"
-#include "src/io/parser.h"
-#include "src/io/reader.h"
+#include "src/io/loader.h"
 #include "src/ui/canvas/canvas.h"
 #include "src/ui/left_tool_bar.h"
 #include "src/ui/menu_bar.h"

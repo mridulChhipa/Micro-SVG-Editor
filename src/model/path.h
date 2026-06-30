@@ -23,8 +23,6 @@ class Path : public GraphicsObject {
   std::unique_ptr<GraphicsObject> Clone() const override;
   void Accept(ShapeVisitor& visitor) override;
   void Translate(double dx, double dy) override;
-  void Resize(int dx, int dy, bool affects_left, bool affects_right,
-              bool affects_top, bool affects_bottom) override;
 
   CommandList& commands() { return commands_; }
   const CommandList& commands() const { return commands_; }

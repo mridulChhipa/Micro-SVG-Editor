@@ -18,10 +18,6 @@ class Rect : public GraphicsObject {
   std::unique_ptr<GraphicsObject> Clone() const override;
   void Accept(ShapeVisitor& visitor) override;
   void Translate(double dx, double dy) override;
-  void Resize(int dx, int dy, bool affects_left, bool affects_right,
-              bool affects_top, bool affects_bottom) override;
-  bool CanSetBorderRadius() const override { return true; }
-  void SetBorderRadius(double radius) override;
 
   float x() const { return x_; }
   void set_x(float v) { x_ = v; }

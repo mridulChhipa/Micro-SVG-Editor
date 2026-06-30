@@ -21,8 +21,6 @@ class Hexagon : public GraphicsObject {
   std::unique_ptr<GraphicsObject> Clone() const override;
   void Accept(ShapeVisitor& visitor) override;
   void Translate(double dx, double dy) override;
-  void Resize(int dx, int dy, bool affects_left, bool affects_right,
-              bool affects_top, bool affects_bottom) override;
 
   double x() const { return x_; }
   void set_x(double v) { x_ = v; }

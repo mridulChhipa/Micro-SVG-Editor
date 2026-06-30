@@ -13,7 +13,7 @@ class AppWindow : public QMainWindow {
   Q_OBJECT
 
  public:
-  AppWindow();
+  explicit AppWindow(ILoader& loader);
 
  private slots:
   void OpenFile();
@@ -26,6 +26,7 @@ class AppWindow : public QMainWindow {
   void LoadStyleSheet();
 
  private:
+  ILoader& loader_;
   Canvas* canvas_;
   // Path of the currently opened file; avoids re-prompting for a location on
   // every save.

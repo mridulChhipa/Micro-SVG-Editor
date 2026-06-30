@@ -33,8 +33,6 @@ void Polyline::Translate(double dx, double dy) {
   }
 }
 
-void Polyline::Resize(int, int, bool, bool, bool, bool) {}
-
 std::string Polyline::ToSvg() const {
   std::ostringstream ss;
   ss << "<polyline points=\"";

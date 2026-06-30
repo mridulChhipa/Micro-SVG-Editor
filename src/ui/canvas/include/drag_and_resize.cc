@@ -1,5 +1,7 @@
 #include "src/ui/canvas/canvas.h"
 
+#include "src/model/resize_visitor.h"
+
 namespace micro_svg_editor {
 
 void Canvas::ApplyDrag(const QPoint& delta) {
@@ -22,8 +24,9 @@ void Canvas::ApplyResize(const QPoint& delta, HandleType handle) {
                          handle == HandleType::kBottomCenter ||
                          handle == HandleType::kBottomRight);
 
-  selected_shape_->Resize(delta.x(), delta.y(), affects_left, affects_right,
-                          affects_top, affects_bottom);
+  ResizeVisitor visitor(delta.x(), delta.y(), affects_left, affects_right,
+                        affects_top, affects_bottom);
+  selected_shape_->Accept(visitor);
 }
 
 }  // namespace micro_svg_editor

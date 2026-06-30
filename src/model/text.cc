@@ -42,8 +42,6 @@ void Text::Translate(double dx, double dy) {
   y_ += dy;
 }
 
-void Text::Resize(int, int, bool, bool, bool, bool) {}
-
 std::unique_ptr<GraphicsObject> Text::Clone() const {
   auto copy = std::make_unique<Text>();
   copy->x_ = x_;

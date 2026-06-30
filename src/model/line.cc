@@ -24,18 +24,6 @@ void Line::Translate(double dx, double dy) {
   y2_ += dy;
 }
 
-void Line::Resize(int dx, int dy, bool affects_left, bool affects_right,
-                  bool affects_top, bool affects_bottom) {
-  if (affects_left || affects_top) {
-    x1_ += dx;
-    y1_ += dy;
-  }
-  if (affects_right || affects_bottom) {
-    x2_ += dx;
-    y2_ += dy;
-  }
-}
-
 std::string Line::ToSvg() const {
   std::ostringstream ss;
   ss << "<line x1=\"" << x1_ << "\" y1=\"" << y1_ << "\" ";

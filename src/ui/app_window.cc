@@ -9,14 +9,9 @@ void AppWindow::OpenFile() {
   if (!file_path.isEmpty()) {
     qDebug() << "File opened:" << file_path;
 
-    // Parser parses the file and creates a SVG object
-    Reader svg_reader = Reader(file_path);
-    Lexer svg_lexer = Lexer(svg_reader);
-    Parser svg_parser = Parser(svg_lexer);
-    svg_parser.Parse();
-    // Once the file is parsed and the SVG object is created, send it to the
-    // canvas and update the working file path.
-    canvas_->UpdateCanvas(svg_parser.GetSvg());
+    // Load via the injected loader, then send the document to the canvas and
+    // record the working file path.
+    canvas_->UpdateCanvas(loader_.Load(file_path));
     curr_file_path_ = file_path.toStdString();
   }
 }
@@ -67,11 +62,7 @@ void AppWindow::SaveAsFile() {
 void AppWindow::OpenSampleFile() {
   QString file_path = ":testxmls/sample.svg";
   qDebug() << "Opening sample file:" << file_path;
-  Reader svg_reader = Reader(file_path);
-  Lexer svg_lexer = Lexer(svg_reader);
-  Parser svg_parser = Parser(svg_lexer);
-  svg_parser.Parse();
-  canvas_->UpdateCanvas(svg_parser.GetSvg());
+  canvas_->UpdateCanvas(loader_.Load(file_path));
 }
 
 void AppWindow::ClearCanvas() { canvas_->ClearCanvas(); }

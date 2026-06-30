@@ -23,18 +23,11 @@ class GraphicsObject {
   // Moves the shape by (dx, dy).
   virtual void Translate(double dx, double dy) = 0;
 
-  // Resizes the shape given a drag delta and which edges the grabbed handle
-  // affects. Shapes that do not support resizing leave this a no-op.
-  virtual void Resize(int dx, int dy, bool affects_left, bool affects_right,
-                      bool affects_top, bool affects_bottom) = 0;
+  // Resizing and type-specific behaviour (fonts, border radius, text editing)
+  // live in visitors, not on this interface (ResizeVisitor, etc.).
 
-  // Capability queries with safe defaults; specific shapes override them.
+  // Whether the shape prefers a padded "stroke" hit area (thin shapes).
   virtual bool PreferStrokeHitTest() const { return false; }
-  virtual bool HasFont() const { return false; }
-  virtual std::string FontFamily() const { return std::string(); }
-  virtual double FontSize() const { return 0.0; }
-  virtual bool CanSetBorderRadius() const { return false; }
-  virtual void SetBorderRadius(double /*radius*/) {}
 
   void InitialiseStyle(
       const std::unordered_map<std::string, std::string>& attributes);

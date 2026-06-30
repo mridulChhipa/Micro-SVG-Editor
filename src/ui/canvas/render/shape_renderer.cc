@@ -14,12 +14,28 @@
 #include <QVector>
 
 #include "src/model/graphics_object.h"
+#include "src/model/shape_visitor.h"
 #include "src/model/svg.h"
+#include "src/model/text.h"
 #include "src/ui/canvas/handle_geometry.h"
 #include "src/ui/canvas/shape_geometry.h"
 
 namespace micro_svg_editor {
 namespace {
+
+// Applies a text shape's font to the painter; a no-op for other shapes.
+class FontApplier : public DefaultShapeVisitor {
+ public:
+  explicit FontApplier(QPainter& painter) : painter_(painter) {}
+  void Visit(Text& text) override {
+    QFont font(QString::fromStdString(text.font_family()));
+    font.setPointSizeF(text.font_size());
+    painter_.setFont(font);
+  }
+
+ private:
+  QPainter& painter_;
+};
 
 void ApplyDashArray(QPen& pen, const std::string& dasharray) {
   if (dasharray == "none" || dasharray.empty()) return;
@@ -46,7 +62,7 @@ QPen BuildPen(const GraphicsObject& shape) {
   return pen;
 }
 
-void ConfigurePainter(const GraphicsObject& shape, QPainter& painter) {
+void ConfigurePainter(GraphicsObject& shape, QPainter& painter) {
   painter.setOpacity(shape.opacity());
 
   if (shape.visibility() == "hidden" || shape.visibility() == "collapse") {
@@ -78,11 +94,8 @@ void ConfigurePainter(const GraphicsObject& shape, QPainter& painter) {
                                : Qt::MiterJoin);
   painter.setPen(current_pen);
 
-  if (shape.HasFont()) {  // Special conditions to pen for text
-    QFont font(QString::fromStdString(shape.FontFamily()));
-    font.setPointSizeF(shape.FontSize());
-    painter.setFont(font);
-  }
+  FontApplier font_applier(painter);  // Sets the font for text shapes only.
+  shape.Accept(font_applier);
 }
 
 void DrawSelection(QPainter& painter, const QPainterPath& path,
